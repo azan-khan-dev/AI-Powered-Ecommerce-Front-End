@@ -12,10 +12,11 @@ import Login from "./Pages/Auth/Login";
 import Contact from "./Pages/Contact";
 import Home from "./Pages/Home";
 import Wishlist_page from "./Pages/Wishlist_page";
-import Cart from "./Pages/cart";
+import Cart from "./Pages/Cart";
 import CheckoutPage from "./Pages/Checkout";
 import ProductPage from "./Pages/ProductDetails";
 import ForgotPassword from "./Pages/Forgot_password";
+import ResetPassword from "./Pages/ResetPassword";
 import Product_list from "./Pages/Product_listing";
 import Products from "./Pages/Products";
 import Orders from "./Pages/Orders";
@@ -34,8 +35,7 @@ import { setWishlistItems } from "./Features/Wishlist/WishlistSlice";
 import { useGetMyOrdersQuery } from "./redux/apis/orderApis";
 import { setOrders, setCancelledOrders } from "./Features/Orders/OrdersSlice";
 
-function App()
-{
+function App() {
   const dispatch = useDispatch();
 
   const { data, isLoading, isError } = useGetMyProfileQuery();
@@ -46,15 +46,12 @@ function App()
     skip: !data?.user && !data?.data // Only fetch if user is authenticated
   });
 
-  useEffect(() =>
-  {
-    if (data?.user || data?.data)
-    {
+  useEffect(() => {
+    if (data?.user || data?.data) {
       dispatch(userExist(data?.user || data?.data));
     }
 
-    if (isError)
-    {
+    if (isError) {
       dispatch(userNotExist());
     }
   }, [data, isError, dispatch]);
@@ -78,8 +75,7 @@ function App()
   }, [ordersData, data, dispatch]);
 
 
-  if (isLoading)
-  {
+  if (isLoading) {
     return (
       <div className="h-screen flex items-center justify-center text-lg font-medium">
         Loading...
@@ -108,6 +104,7 @@ function App()
           <Route path="/product/:id" element={<ProductPage />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/products/:type" element={<Products />} />
           <Route path="/product_list" element={<Product_list />} />
           <Route path="/product_list/:category" element={<Product_list />} />
