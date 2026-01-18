@@ -2,7 +2,7 @@ import React from "react";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { addToCart } from "../../Features/Cart/CartSlice";
+import { addToCart } from "../../Features/cart/cartSlice";
 import { addToWishlist, removeFromWishlist } from "../../Features/Wishlist/WishlistSlice";
 import { useAddToWishlistMutation, useRemoveFromWishlistMutation } from "../../redux/apis/wishlistApis";
 import { useGetUserWishlistQuery } from "../../redux/apis/wishlistApis";
@@ -10,20 +10,24 @@ const ProductCard = ({ product }) =>
 {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [addToWishlistApi] = useAddToWishlistMutation();
-  const [removeFromWishlistApi] = useRemoveFromWishlistMutation();
-  const { data: wishlistData, isLoading: isWishlistLoading, isError: isWishlistError } = useGetUserWishlistQuery();
+  const [addToWishlistApi, { isLoading: isAddingToWishlist }] = useAddToWishlistMutation();
+  const [removeFromWishlistApi, { isLoading: isRemovingFromWishlist }] = useRemoveFromWishlistMutation();
+  const { data: wishlistData, isLoading: isWishlistLoading, isError: isWishlistError, refetch: refetchWishlist } = useGetUserWishlistQuery();
   // check product wishlist mei hai ya nahi
   const wishlist = wishlistData?.data || [];
-  const isInWishlist = wishlist?.some((item) => item?.id === product?.id);
+  const isInWishlist = wishlist?.some((item) => item?.product?.id || item?.product?._id === product?.id);
 
   const toggleWishlist = (e) => {
   e.stopPropagation();
   if (isInWishlist) {
+    dispatch(removeFromWishlist(product?.id));
     removeFromWishlistApi(product?.id).then(() => {
+      refetchWishlist();
     });
   } else {
+    dispatch(addToWishlist({ product: { _id: product?.id, name: product?.title, images: [{ url: product?.image }], price: product?.price, is_flash_sale: product?.isFlashSale } }));
     addToWishlistApi(product?.id).then(() => {
+      refetchWishlist();
     });
   }
 };
@@ -46,8 +50,13 @@ const ProductCard = ({ product }) =>
           className="absolute top-2 right-2 transition-opacity duration-300"
           onClick={toggleWishlist}
         >
-          <div className="w-10 h-10 bg-gray-200 hover:bg-black rounded-full flex items-center justify-center cursor-pointer">
-            {isInWishlist ? (
+          <div className={`w-10 h-10 bg-gray-200 hover:bg-black rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 ${(isAddingToWishlist || isRemovingFromWishlist) ? 'opacity-50 cursor-wait' : ''}`}>
+            {(isAddingToWishlist || isRemovingFromWishlist) ? (
+              <svg className="animate-spin h-5 w-5 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            ) : isInWishlist ? (
               <AiFillHeart className="text-red-500" size={22} />
             ) : (
               <AiOutlineHeart className="text-gray-700" size={22} />

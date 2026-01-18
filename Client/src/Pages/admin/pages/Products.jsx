@@ -17,9 +17,10 @@ const Products = () => {
     category: filterCategory === 'all' ? undefined : filterCategory,
   });
   const { data: categoriesData } = useGetAllCategoriesQuery();
-  const [createProduct] = useCreateProductMutation();
-  const [updateProduct] = useUpdateProductMutation();
-  const [deleteProduct] = useDeleteProductMutation();
+  const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
+  const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
+  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
+  const [deletingProductId, setDeletingProductId] = useState(null);
 
   const products = productsData?.data || [];
   const categories = categoriesData?.data || [];
@@ -36,12 +37,15 @@ const Products = () => {
 
   const handleDeleteProduct = async (productId) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
+      setDeletingProductId(productId);
       try {
-        await deleteProduct(productId);
+        await deleteProduct(productId).unwrap();
         toast.success('Product deleted successfully');
         refetch();
       } catch (error) {
-        toast.error('Failed to delete product');
+        toast.error(error?.data?.message || 'Failed to delete product');
+      } finally {
+        setDeletingProductId(null);
       }
     }
   };
@@ -150,6 +154,7 @@ const Products = () => {
             }}
             onEdit={handleEditProduct}
             onDelete={handleDeleteProduct}
+            isDeleting={deletingProductId === product._id}
           />
         ))}
       </div>
@@ -167,6 +172,7 @@ const Products = () => {
             setShowForm(false);
             setEditingProduct(null);
           }}
+          isLoading={isCreating || isUpdating}
         />
       )}
     </div>

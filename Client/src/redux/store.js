@@ -18,13 +18,14 @@ import categoryApis from "./apis/categoryApis";
 import orderApis from "./apis/orderApis";
 import wishlistApis from "./apis/wishlistApis";
 
+
 // Slices
 import authSlice from "./slices/authSlice";
 import userSlice from "./slices/userSlice";
 import notificationsSlice from "./slices/notificationsSlice";
 
 // 🛒 E-commerce slices
-import cartReducer from "../Features/Cart/CartSlice";
+import cartReducer from "../Features/cart/cartSlice";
 import productsReducer from "../Features/Products/productsSlice";
 import wishlistReducer from "../Features/Wishlist/WishlistSlice";
 import ordersReducer from "../Features/Orders/OrdersSlice";

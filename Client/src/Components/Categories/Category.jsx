@@ -1,19 +1,20 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { CiMobile3, CiCamera } from "react-icons/ci";
-import { HiOutlineComputerDesktop } from "react-icons/hi2";
-import { BsSmartwatch } from "react-icons/bs";
-import { PiHeadphonesLight } from "react-icons/pi";
-import { IoGameControllerOutline } from "react-icons/io5";
+import { MdOutlineVisibility } from "react-icons/md";
+import { GiSunglasses } from "react-icons/gi";
+import { FaRegEye, FaBaby } from "react-icons/fa";
+import { IoMdFootball, IoMdGlasses } from "react-icons/io";
 
 const categories = [
-  { id: 1, name: "Mobiles", icon: <CiMobile3 size={36} /> },
-  { id: 2, name: "Computers", icon: <HiOutlineComputerDesktop size={36} /> },
-  { id: 3, name: "Smartwatch", icon: <BsSmartwatch size={36} /> },
-  { id: 4, name: "Camera", icon: <CiCamera size={36} /> },
-  { id: 5, name: "Headphones", icon: <PiHeadphonesLight size={36} /> },
-  { id: 6, name: "Gaming", icon: <IoGameControllerOutline size={36} /> },
+  { id: 1, name: "Sunglasses", icon: <GiSunglasses size={36} /> },
+  { id: 2, name: "Prescription", icon: <IoMdGlasses size={36} /> },
+  { id: 3, name: "Reading", icon: <MdOutlineVisibility size={36} /> },
+  { id: 4, name: "Contact Lenses", icon: <FaRegEye size={36} /> },
+  { id: 5, name: "Kids Glasses", icon: <FaBaby size={36} /> },
+  { id: 6, name: "Sports", icon: <IoMdFootball size={36} /> },
 ];
+
+export { categories };
 
 const CategoryGrid = () => {
   const navigate = useNavigate();

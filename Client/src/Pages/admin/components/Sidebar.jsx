@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { MdDashboard } from "react-icons/md";
 import { FaBoxOpen } from "react-icons/fa";
 import { MdOutlineShoppingCart } from "react-icons/md";
-import { MdOutlineCategory } from "react-icons/md";
 import { FaUsers } from "react-icons/fa6";
 import { IoMdSettings } from "react-icons/io";
 import { HiMenu, HiX } from "react-icons/hi";
@@ -14,7 +13,6 @@ const Sidebar = ({ currentPage, setCurrentPage }) => {
     { id: 'dashboard', label: 'Dashboard', icon: <MdDashboard /> },
     { id: 'products', label: 'Products', icon: <FaBoxOpen /> },
     { id: 'orders', label: 'Orders', icon: <MdOutlineShoppingCart /> },
-    { id: 'categories', label: 'Categories', icon: <MdOutlineCategory /> },
     { id: 'users', label: 'Users', icon: <FaUsers /> },
     { id: 'settings', label: 'Settings', icon: <IoMdSettings /> }
   ];

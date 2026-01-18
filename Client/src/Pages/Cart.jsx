@@ -7,7 +7,7 @@ import
   removeFromCart,
   increaseQuantity,
   decreaseQuantity,
-} from "../Features/Cart/CartSlice";
+} from "../Features/cart/cartSlice";
 import { Router } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";

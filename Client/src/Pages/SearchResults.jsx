@@ -1,18 +1,18 @@
-import React from "react";
-import { useParams } from "react-router-dom";
-import { useGetProductsByCategoryQuery } from "../../redux/apis/productApis";
-import ProductCard from "../ProductCard/Product_card";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useSearchProductsQuery } from "../redux/apis/homeApis";
+import ProductCard from "../Components/ProductCard/Product_card";
 
-const CategoryProducts = () => {
-  const { categoryName } = useParams();
+const SearchResults = () => {
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get('q') || '';
 
-  const { data: categoryData, isLoading, error } = useGetProductsByCategoryQuery({
-    categoryName: categoryName.replace(/-/g, " "),
-    page: 1,
-    limit: 20,
-  });
+  const { data: searchResults, isLoading, error } = useSearchProductsQuery(
+    { q: query },
+    { skip: !query }
+  );
 
-  const products = categoryData?.data || [];
+  const products = searchResults?.data || [];
 
   // Transform data to match ProductCard format
   const transformedProducts = products.map(product => ({
@@ -44,7 +44,7 @@ const CategoryProducts = () => {
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="text-center text-red-500 py-10">
-            <p className="text-lg mb-4">Failed to load category products</p>
+            <p className="text-lg mb-4">Failed to load search results</p>
             <p className="text-sm">Please try again later</p>
           </div>
         </div>
@@ -55,17 +55,19 @@ const CategoryProducts = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Category Header */}
+        {/* Search Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2 capitalize">
-            {categoryName.replace(/-/g, " ")}
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            Search Results
           </h1>
-          <p className="text-gray-600">
-            {products.length > 0
-              ? `Found ${products.length} product${products.length > 1 ? 's' : ''} in this category`
-              : `No products found in this category`
-            }
-          </p>
+          {query && (
+            <p className="text-gray-600">
+              {products.length > 0
+                ? `Found ${products.length} result${products.length > 1 ? 's' : ''} for "${query}"`
+                : `No results found for "${query}"`
+              }
+            </p>
+          )}
         </div>
 
         {/* Products Grid */}
@@ -79,12 +81,12 @@ const CategoryProducts = () => {
           <div className="text-center py-16">
             <div className="text-gray-400 text-6xl mb-4">
               <svg className="w-24 h-24 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
               </svg>
             </div>
             <h3 className="text-xl font-medium text-gray-900 mb-2">No products found</h3>
             <p className="text-gray-500 mb-6">
-              This category doesn't have any products yet.
+              Try adjusting your search terms or browse our categories
             </p>
             <a
               href="/"
@@ -99,4 +101,4 @@ const CategoryProducts = () => {
   );
 };
 
-export default CategoryProducts;
+export default SearchResults;

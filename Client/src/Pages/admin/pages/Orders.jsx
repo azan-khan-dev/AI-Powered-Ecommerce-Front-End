@@ -8,26 +8,30 @@ const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [updatingOrderId, setUpdatingOrderId] = useState(null);
 
   // API hooks
   const { data: ordersData, isLoading, refetch } = useGetAllOrdersQuery({
     status: filterStatus === 'all' ? undefined : filterStatus,
   });
-  const [updateOrderStatus] = useUpdateOrderStatusMutation();
+  const [updateOrderStatus, { isLoading: isUpdatingStatus }] = useUpdateOrderStatusMutation();
 
   const orders = ordersData?.data || [];
 
   const handleStatusChange = async (orderId, newStatus, trackingNumber = '') => {
+    setUpdatingOrderId(orderId);
     try {
       await updateOrderStatus({
         id: orderId,
         status: newStatus,
         trackingNumber
-      });
+      }).unwrap();
       toast.success('Order status updated successfully');
       refetch();
     } catch (error) {
-      toast.error('Failed to update order status');
+      toast.error(error?.data?.message || 'Failed to update order status');
+    } finally {
+      setUpdatingOrderId(null);
     }
   };
 
@@ -137,6 +141,7 @@ const Orders = () => {
                 customerName={order.customer?.name || 'Unknown Customer'}
                 onStatusChange={handleStatusChange}
                 onViewDetails={() => setSelectedOrder(order)}
+                isUpdating={updatingOrderId === order._id}
               />
             ))}
           </div>

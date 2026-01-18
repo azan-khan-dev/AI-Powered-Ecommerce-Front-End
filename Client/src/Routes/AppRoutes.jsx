@@ -13,6 +13,7 @@ import ProductPage from "../Pages/ProductDetails";
 import ForgotPassword from "../Pages/Forgot_password";
 import Product_list from "../Pages/Product_listing";
 import Products from "../Pages/Products";
+import SearchResults from "../Pages/SearchResults";
 
 export default function AppRoutes()
 {
@@ -26,8 +27,9 @@ export default function AppRoutes()
       <Route path="/about" element={<About />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/checkout" element={<CheckoutPage />} /> 
-<Route path="/product/:id" element={<ProductPage />} />
+      <Route path="/checkout" element={<CheckoutPage />} />
+      <Route path="/product/:id" element={<ProductPage />} />
+      <Route path="/search" element={<SearchResults />} />
 
       
       <Route path="/forgot-password" element={<ForgotPassword />} />

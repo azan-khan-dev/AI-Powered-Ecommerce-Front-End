@@ -21,7 +21,9 @@ const ProductCard = ({ product, onEdit, onDelete }) =>
 
   // Check for flash sale
   const hasFlashSale = product.is_flash_sale;
+  const hasFeatured = product?.is_featured
   const flashSalePrice = product.flash_sale_price || product.discountPrice;
+
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-200">
@@ -34,6 +36,11 @@ const ProductCard = ({ product, onEdit, onDelete }) =>
         {(hasFlashSale || flashSalePrice) && (
           <div className="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold">
             {hasFlashSale ? 'FLASH SALE' : `${Math.round(((displayPrice - flashSalePrice) / displayPrice) * 100)}% OFF`}
+          </div>
+        )}
+         {(hasFeatured) && (
+          <div className="absolute top-3 left-3 bg-green-500 text-white px-2 py-1 rounded text-sm font-semibold">
+            {hasFeatured ? 'FEATURED' : ``}
           </div>
         )}
       </div>

@@ -4,7 +4,8 @@ import { useGetFeaturedProductsQuery } from "../../redux/apis/homeApis";
 
 const Featured = () => {
     const navigate = useNavigate();
-    const { data: featuredProducts, isLoading } = useGetFeaturedProductsQuery();
+    const { data, isLoading } = useGetFeaturedProductsQuery();
+    const featuredProducts = data?.data || data
 
     return (
         <div className="w-full px-6 min-h-[800px]">
@@ -37,11 +38,11 @@ const Featured = () => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Left Large Box - Dynamic */}
-                    {featuredProducts?.data && featuredProducts.data[0] ? (
+                    {featuredProducts && featuredProducts[0] ? (
                         <div className="relative overflow-hidden min-h-[550px] flex items-end bg-black">
                             <img
-                                src={featuredProducts[0].images[0]?.url || "public/PS5.png"}
-                                alt={featuredProducts[0].name}
+                                src={featuredProducts[0]?.images[0]?.url || "public/PS5.png"}
+                                alt={featuredProducts[0]?.name}
                                 className="absolute inset-0 w-full h-full object-cover"
                             />
                             <div className="absolute inset-0 bg-opacity-50" />

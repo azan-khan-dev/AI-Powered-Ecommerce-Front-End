@@ -1,40 +1,5 @@
 // Dummy data for the admin dashboard
 
-export const categories = [
-  {
-    id: 1,
-    name: "Electronics",
-    description: "Electronic devices and gadgets",
-    image: "https://via.placeholder.com/300x200/4A90E2/FFFFFF?text=Electronics",
-    productCount: 15,
-    createdAt: "2024-01-15"
-  },
-  {
-    id: 2,
-    name: "Clothing",
-    description: "Fashion and apparel",
-    image: "https://via.placeholder.com/300x200/E94B3C/FFFFFF?text=Clothing",
-    productCount: 25,
-    createdAt: "2024-01-10"
-  },
-  {
-    id: 3,
-    name: "Home & Garden",
-    description: "Home improvement and gardening supplies",
-    image: "https://via.placeholder.com/300x200/50E3C2/FFFFFF?text=Home+Garden",
-    productCount: 12,
-    createdAt: "2024-01-20"
-  },
-  {
-    id: 4,
-    name: "Books",
-    description: "Books and educational materials",
-    image: "https://via.placeholder.com/300x200/F5A623/FFFFFF?text=Books",
-    productCount: 8,
-    createdAt: "2024-02-01"
-  }
-];
-
 export const products = [
   {
     id: 1,

@@ -3,7 +3,6 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
 import Orders from './pages/Orders';
-import Categories from './pages/Categories';
 import Users from './pages/Users';
 import Settings from './pages/Settings';
 import { useSelector } from "react-redux";
@@ -30,8 +29,6 @@ function Admin()
         return <Products />;
       case 'orders':
         return <Orders />;
-      case 'categories':
-        return <Categories />;
       case 'users':
         return <Users />;
       case 'settings':

@@ -18,6 +18,10 @@ import ProductPage from "./Pages/ProductDetails";
 import ForgotPassword from "./Pages/Forgot_password";
 import Product_list from "./Pages/Product_listing";
 import Products from "./Pages/Products";
+import Orders from "./Pages/Orders";
+import Profile from "./Pages/Profile";
+import Cancellations from "./Pages/Cancellations";
+import SearchResults from "./Pages/SearchResults";
 import Admin from "./Pages/admin/index"
 
 import { ToastContainer } from "react-toastify";
@@ -25,12 +29,22 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { useGetMyProfileQuery } from "./redux/apis/authApis";
 import { userExist, userNotExist } from "./redux/slices/authSlice";
+import { useGetUserWishlistQuery } from "./redux/apis/wishlistApis";
+import { setWishlistItems } from "./Features/Wishlist/WishlistSlice";
+import { useGetMyOrdersQuery } from "./redux/apis/orderApis";
+import { setOrders, setCancelledOrders } from "./Features/Orders/OrdersSlice";
 
 function App()
 {
   const dispatch = useDispatch();
 
   const { data, isLoading, isError } = useGetMyProfileQuery();
+  const { data: wishlistData } = useGetUserWishlistQuery(undefined, {
+    skip: !data?.user && !data?.data // Only fetch if user is authenticated
+  });
+  const { data: ordersData } = useGetMyOrdersQuery({ page: 1, limit: 50 }, {
+    skip: !data?.user && !data?.data // Only fetch if user is authenticated
+  });
 
   useEffect(() =>
   {
@@ -44,6 +58,24 @@ function App()
       dispatch(userNotExist());
     }
   }, [data, isError, dispatch]);
+
+  // Initialize wishlist and orders data when user is authenticated
+  useEffect(() => {
+    if (wishlistData?.data && (data?.user || data?.data)) {
+      dispatch(setWishlistItems(wishlistData.data));
+    }
+  }, [wishlistData, data, dispatch]);
+
+  useEffect(() => {
+    if (ordersData?.data && (data?.user || data?.data)) {
+      const allOrders = ordersData.data;
+      const activeOrders = allOrders.filter(order => order.status !== 'cancelled');
+      const cancelledOrders = allOrders.filter(order => order.status === 'cancelled');
+
+      dispatch(setOrders(activeOrders));
+      dispatch(setCancelledOrders(cancelledOrders));
+    }
+  }, [ordersData, data, dispatch]);
 
 
   if (isLoading)
@@ -66,11 +98,15 @@ function App()
           <Route path="/" element={<Home />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/wishlist" element={<Wishlist_page />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/cancellations" element={<Cancellations />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/about" element={<About />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/product/:id" element={<ProductPage />} />
+          <Route path="/search" element={<SearchResults />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/products/:type" element={<Products />} />
           <Route path="/product_list" element={<Product_list />} />
@@ -81,6 +117,7 @@ function App()
       </main>
 
       <Footer />
+
 
       <ToastContainer
         position="top-right"

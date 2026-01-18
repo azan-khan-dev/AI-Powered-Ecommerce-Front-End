@@ -206,9 +206,7 @@ const FlashSales = () =>
           <button
             onClick={() =>
             {
-              dispatch(setProducts(transformedProducts));
-              localStorage.setItem("products", JSON.stringify(transformedProducts));
-              window.open("/products/flash-sales", "_blank"); // ✅ new path
+              navigate("/products/flash-sales")
             }}
             className="bg-red-600 text-white px-7 py-3 rounded-sm hover:bg-red-500 transition cursor-pointer mt-5 font-quicksand font-semibold"
           >

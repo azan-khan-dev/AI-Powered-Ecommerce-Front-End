@@ -85,6 +85,15 @@ const homeApis = createApi({
         params,
       }),
     }),
+
+    // our-products
+    getOurProducts: builder.query({
+      query: () => ({
+        url: "/our-products",
+        method: "GET",
+      }),
+    }),
+
   }),
 });
 
@@ -98,6 +107,7 @@ export const {
   useGetFeaturedProductsQuery,
   useGetAllProductsQuery,
   useGetProductsByCategoryQuery,
+  useGetOurProductsQuery
 } = homeApis;
 
 export default homeApis;

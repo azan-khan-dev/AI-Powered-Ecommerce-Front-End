@@ -6,7 +6,8 @@ import { FiShoppingBag } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
 import { SlLogout } from "react-icons/sl";
 import { useSelector } from "react-redux";
-import { useState } from "react";
+import { selectOrderCount, selectCancelledCount } from "../Features/Orders/OrdersSlice";
+import { useState, useEffect, useRef } from "react";
 import { useSearchProductsQuery } from "../redux/apis/homeApis";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -21,10 +22,14 @@ function Header()
   const dispatch = useDispatch();
   const [logoutApi] = useLogoutMutation();
   const cartItems = useSelector((state) => state.cart.cartItems || []);
-  const wishlistItems = useSelector((state) => state.wishlist.wishlist || []);
+  const wishlistCount = useSelector((state) => state.wishlist.count || 0);
+  const orderCount = useSelector(selectOrderCount);
+  const cancelledCount = useSelector(selectCancelledCount);
 
   const [query, setQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const mobileSearchRef = useRef(null);
   const { data: searchResults, isLoading: isSearching } = useSearchProductsQuery(
     { q: searchQuery },
     { skip: !searchQuery.trim() }
@@ -62,6 +67,16 @@ function Header()
     return () => clearTimeout(timeoutId);
   };
 
+  // Handle Enter key press for search
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'Enter' && query.trim()) {
+      navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+      // Close any open dropdowns and clear search state
+      setSearchQuery("");
+      setShowMobileSearch(false);
+    }
+  };
+
   const handleLogout = () =>
   {
     logoutApi().then(() => {
@@ -69,6 +84,23 @@ function Header()
     });
     navigate("/");
   };
+
+  // Close mobile search when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (mobileSearchRef.current && !mobileSearchRef.current.contains(event.target)) {
+        setShowMobileSearch(false);
+      }
+    };
+
+    if (showMobileSearch) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showMobileSearch]);
 
   return (
     <header className="sticky top-0 z-50 shadow-sm border-b bg-white">
@@ -95,6 +127,61 @@ function Header()
 
         {/* Right: Search + Icons */}
         <div className="flex items-center gap-4 relative">
+          {/* Mobile Search Button */}
+          <button
+            onClick={() => setShowMobileSearch(!showMobileSearch)}
+            className="md:hidden hover:text-red-500 transition text-2xl"
+          >
+            <CiSearch />
+          </button>
+
+          {/* Mobile Search Bar */}
+          {showMobileSearch && (
+            <div ref={mobileSearchRef} className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg border-t z-50 p-4">
+              <div className="relative bg-gray-100 rounded-md px-4 py-2 transition-all duration-300 hover:ring-2 hover:ring-red-500 focus-within:ring-2 focus-within:ring-red-600">
+                <input
+                  type="text"
+                  value={query}
+                  onChange={handleSearch}
+                  onKeyDown={handleSearchKeyDown}
+                  placeholder="Search products..."
+                  className="w-full bg-transparent outline-none text-sm placeholder-gray-500"
+                  autoFocus
+                />
+                <CiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-black text-xl cursor-pointer" />
+
+                {/* Mobile Suggestions */}
+                {searchQuery && searchResults && searchResults.data && searchResults.data.length > 0 && (
+                  <div className="absolute top-12 left-0 w-full bg-white shadow-lg rounded-md z-50 max-h-60 overflow-y-auto">
+                    {searchResults.data.slice(0, 5).map((item) => (
+                      <Link
+                        key={item._id}
+                        to={`/product/${item._id}`}
+                        className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
+                        onClick={() =>
+                        {
+                          setQuery("");
+                          setSearchQuery("");
+                          setShowMobileSearch(false);
+                        }}
+                      >
+                        <img
+                          src={item.images[0]?.url}
+                          alt={item.name}
+                          className="w-10 h-10 object-cover rounded-md"
+                        />
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-800 text-sm">{item.name}</p>
+                          <p className="text-sm text-gray-600">${item.price}</p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Search Desktop */}
          <div className="hidden md:flex relative bg-gray-100 rounded-md px-4 py-2 w-[300px]
   transition-all duration-300
@@ -105,13 +192,14 @@ function Header()
     type="text"
     value={query}
     onChange={handleSearch}
+    onKeyDown={handleSearchKeyDown}
     placeholder="Search products..."
     className="flex-1 bg-transparent outline-none text-sm placeholder-gray-500"
   />
             <CiSearch className="text-black text-2xl cursor-pointer ml-2" />
 
             {/* Suggestions */}
-            {searchResults && searchResults.data && searchResults.data.length > 0 && (
+            {searchQuery && searchResults && searchResults.data && searchResults.data.length > 0 && (
               <div className="absolute top-12 left-0 w-full bg-white shadow-lg rounded-md z-50 max-h-60 overflow-y-auto">
                 {searchResults.data.slice(0, 5).map((item) => (
                   <Link
@@ -132,7 +220,6 @@ function Header()
                     <div className="flex-1">
                       <p className="font-medium text-gray-800">{item.name}</p>
                       <p className="text-sm text-gray-600">${item.price}</p>
-                      <p className="text-xs text-gray-500 truncate">{item.description}</p>
                     </div>
                   </Link>
                 ))}
@@ -145,9 +232,9 @@ function Header()
            {/* Wishlist & Cart */}
            <Link to="/wishlist" className="relative hover:text-red-500 transition text-3xl">
            <CiHeart />
-           {wishlistItems.length > 0 && (
+           {wishlistCount > 0 && (
              <span className="absolute -top-2 -right-2 bg-red-600 text-xs text-white rounded-full w-4 h-4 flex items-center justify-center">
-               {wishlistItems.length}
+               {wishlistCount}
              </span>
            )}
          </Link>
@@ -173,11 +260,30 @@ function Header()
              </Link>) : <Link to="/dashboard" className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition">
                <FaRegUser className="text-lg" /> Manage my account
              </Link>}
-             <Link to="/orders" className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition">
-               <FiShoppingBag className="text-lg" /> My orders
+             <Link to="/profile" className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition">
+               <CiUser className="text-lg" /> My profile
              </Link>
-             <Link to="/cancellations" className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition">
-               <MdOutlineCancel className="text-lg" /> My cancellations
+             <Link to="/orders" className="flex items-center justify-between gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition">
+               <div className="flex items-center gap-2">
+                 <FiShoppingBag className="text-lg" />
+                 <span>My orders</span>
+               </div>
+               {orderCount > 0 && (
+                 <span className="bg-red-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                   {orderCount}
+                 </span>
+               )}
+             </Link>
+             <Link to="/cancellations" className="flex items-center justify-between gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition">
+               <div className="flex items-center gap-2">
+                 <MdOutlineCancel className="text-lg" />
+                 <span>My cancellations</span>
+               </div>
+               {cancelledCount > 0 && (
+                 <span className="bg-red-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                   {cancelledCount}
+                 </span>
+               )}
              </Link>
              <Link to="/reviews" className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition">
                <FaRegStar className="text-lg" /> My reviews

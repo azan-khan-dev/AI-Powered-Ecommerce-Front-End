@@ -3,7 +3,7 @@ import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { FaTruckFast, FaArrowsRotate } from "react-icons/fa6";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../Features/Cart/CartSlice";
+import { addToCart } from "../Features/cart/cartSlice";
 import ProductCard from "../Components/ProductCard/Product_card";
 import { useGetProductQuery } from "../redux/apis/productApis";
 

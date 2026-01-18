@@ -34,6 +34,15 @@ const productApis = createApi({
       }),
     }),
 
+    // Get products by category
+    getProductsByCategory: builder.query({
+      query: ({ categoryName, ...params }) => ({
+        url: `/category/${categoryName}`,
+        method: "GET",
+        params,
+      }),
+    }),
+
     // Create product
     createProduct: builder.mutation({
       query: (formData) => ({
@@ -75,6 +84,7 @@ export const {
   useGetAllProductsQuery,
   useGetProductQuery,
   useGetMyProductsQuery,
+  useGetProductsByCategoryQuery,
   useCreateProductMutation,
   useUpdateProductMutation,
   useDeleteProductMutation,

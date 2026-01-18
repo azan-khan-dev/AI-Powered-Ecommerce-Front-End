@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   wishlistItems: [],
+  count: 0,
   loading: false,
   error: null,
 };
@@ -18,22 +19,32 @@ const wishlistSlice = createSlice({
 
       if (!existingItem) {
         state.wishlistItems.push(item);
+        state.count += 1;
       }
     },
 
     removeFromWishlist: (state, action) => {
       const productId = action.payload;
-      state.wishlistItems = state.wishlistItems.filter(
-        (item) => item.product._id !== productId
+      const itemExists = state.wishlistItems.some(
+        (item) => item.product._id === productId
       );
+
+      if (itemExists) {
+        state.wishlistItems = state.wishlistItems.filter(
+          (item) => item.product._id !== productId
+        );
+        state.count -= 1;
+      }
     },
 
     setWishlistItems: (state, action) => {
       state.wishlistItems = action.payload;
+      state.count = action.payload.length;
     },
 
     clearWishlist: (state) => {
       state.wishlistItems = [];
+      state.count = 0;
     },
 
     setLoading: (state, action) => {
@@ -54,5 +65,11 @@ export const {
   setLoading,
   setError,
 } = wishlistSlice.actions;
+
+// Selectors
+export const selectWishlistItems = (state) => state.wishlist.wishlistItems;
+export const selectWishlistCount = (state) => state.wishlist.count;
+export const selectWishlistLoading = (state) => state.wishlist.loading;
+export const selectWishlistError = (state) => state.wishlist.error;
 
 export default wishlistSlice.reducer;
