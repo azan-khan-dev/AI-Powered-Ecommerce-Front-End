@@ -17,6 +17,12 @@ import { useNavigate } from "react-router-dom";
 function Cart()
 {
   // ✅ Corrected state name (cartItems instead of items)
+  //////////////////
+  ////////////////////
+  //////////////////
+  ////////////////
+  /////////////////
+  //////////////////
   const cartItems = useSelector((state) => state.cart.cartItems || []);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
