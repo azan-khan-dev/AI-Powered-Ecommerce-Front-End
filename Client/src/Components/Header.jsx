@@ -105,17 +105,13 @@ function Header()
   return (
     <header className="sticky top-0 z-50 shadow-sm border-b bg-white">
       {/* Top Banner */}
-      <div className="bg-black text-white text-center text-sm py-4 h-14 font-quicksand font-medium">
-        Summer Sale For All Swim Suits And Free Express Delivery - OFF 50%!
-        <span className="underline cursor-pointer ml-1 font-bold">Shop Now</span>
-      </div>
+    
 
       {/* Main Header */}
       <div className="max-w-7xl mx-auto py-6 px-4 flex items-center justify-between bg-white">
         {/* Left: Logo */}
         <Link to="/" className="text-xl font-bold">
-          Exclusive
-        </Link>
+SMART VISION        </Link>
 
         {/* Center Nav */}
         <nav className="hidden md:flex gap-10 text-sm font-quicksand font-semibold">
@@ -249,50 +245,75 @@ function Header()
          </Link>
 
          {/* Profile Dropdown */}
-         <div className="relative group hidden md:block">
-           <button className="hover:text-red-500 transition text-3xl focus:outline-none">
-             <CiUser />
-           </button>
-           <div className="opacity-0 invisible group-hover:visible group-hover:opacity-100 
-             absolute right-0 mt-2 w-48 bg-black/55 backdrop-blur-md rounded-md transition-all duration-300 z-50">
-             {user?.role === "admin" ? (<Link to="/admin" className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition">
-               <FaRegUser className="text-lg" /> Admin Dashboard
-             </Link>) : <Link to="/dashboard" className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition">
-               <FaRegUser className="text-lg" /> Manage my account
-             </Link>}
-             <Link to="/profile" className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition">
-               <CiUser className="text-lg" /> My profile
-             </Link>
-             <Link to="/orders" className="flex items-center justify-between gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition">
-               <div className="flex items-center gap-2">
-                 <FiShoppingBag className="text-lg" />
-                 <span>My orders</span>
-               </div>
-               {orderCount > 0 && (
-                 <span className="bg-red-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
-                   {orderCount}
-                 </span>
-               )}
-             </Link>
-             <Link to="/cancellations" className="flex items-center justify-between gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition">
-               <div className="flex items-center gap-2">
-                 <MdOutlineCancel className="text-lg" />
-                 <span>My cancellations</span>
-               </div>
-               {cancelledCount > 0 && (
-                 <span className="bg-red-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
-                   {cancelledCount}
-                 </span>
-               )}
-             </Link>
-             <Link to="/reviews" className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition">
-               <FaRegStar className="text-lg" /> My reviews
-             </Link>
-             <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition">
-               <SlLogout className="text-lg" /> Logout
-             </button>
-           </div>
-         </div>
+       <div className="relative group hidden md:block">
+  <button className="hover:text-red-500 transition text-3xl focus:outline-none">
+    <CiUser />
+  </button>
+
+  <div className="opacity-0 invisible group-hover:visible group-hover:opacity-100 
+    absolute right-0 mt-2 w-48 bg-black/55 backdrop-blur-md rounded-md transition-all duration-300 z-50">
+
+    {/* Admin only */}
+    {user?.role === "admin" ? (
+      <Link
+        to="/admin"
+        className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition"
+      >
+        <FaRegUser className="text-lg" /> Admin Dashboard
+      </Link>
+    ) : (
+      <>
+        {/* Normal users only */}
+        <Link
+          to="/profile"
+          className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition"
+        >
+          <CiUser className="text-lg" /> My profile
+        </Link>
+
+        <Link
+          to="/orders"
+          className="flex items-center justify-between gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition"
+        >
+          <div className="flex items-center gap-2">
+            <FiShoppingBag className="text-lg" />
+            <span>My orders</span>
+          </div>
+          {orderCount > 0 && (
+            <span className="bg-red-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+              {orderCount}
+            </span>
+          )}
+        </Link>
+
+        <Link
+          to="/cancellations"
+          className="flex items-center justify-between gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition"
+        >
+          <div className="flex items-center gap-2">
+            <MdOutlineCancel className="text-lg" />
+            <span>My cancellations</span>
+          </div>
+          {cancelledCount > 0 && (
+            <span className="bg-red-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+              {cancelledCount}
+            </span>
+          )}
+        </Link>
+      </>
+    )}
+
+    {/* Logout for all */}
+    <button
+      onClick={handleLogout}
+      className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition"
+    >
+      <SlLogout className="text-lg" /> Logout
+    </button>
+  </div>
+</div>
+
+
          </>
          )}
         </div>

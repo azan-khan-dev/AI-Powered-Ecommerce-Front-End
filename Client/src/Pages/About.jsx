@@ -49,7 +49,7 @@ function About()
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-28 mt-28">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center mb-19 mt-10">
         {[
           {
             icon: <FaStore className="text-white text-xl" />,
@@ -65,12 +65,7 @@ function About()
             icon: <FaGift className="text-white text-xl" />,
             count: "45.5k",
             label: "Customers active on our site",
-          },
-          {
-            icon: <FaMoneyBillWave className="text-white text-xl" />,
-            count: "25k",
-            label: "Annual gross sale on our site",
-          },
+          }
         ].map((item, index) => (
           <div
             key={index}

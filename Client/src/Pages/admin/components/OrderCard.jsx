@@ -54,7 +54,7 @@ const OrderCard = ({ order, customerName, onStatusChange, onViewDetails, isUpdat
           </div>
         </div>
 
-        <div className="flex-shrink-0 ml-4 relative z-10">
+        <div className="flex-shrink-0 ml-4 absolute right-6 mt-2 "><br />
           <select
             value={order?.status}
             onChange={handleStatusChange}

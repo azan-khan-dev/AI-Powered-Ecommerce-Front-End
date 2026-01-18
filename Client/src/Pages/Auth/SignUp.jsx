@@ -163,9 +163,7 @@ function Signup()
               {isLoading ? "Creating..." : "Create an Account"}
             </button>
 
-            <button className="border border-gray-300 p-3 rounded">
-              Sign Up with Google
-            </button>
+            
 
             <p className="text-center text-gray-700">
               Already have an account?

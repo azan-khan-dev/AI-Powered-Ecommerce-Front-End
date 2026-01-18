@@ -98,17 +98,7 @@ const Dashboard = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900 m-0 mb-5">Sales Overview</h2>
-          <Chart data={getFilteredData()} type="line" filter={timeFilter} />
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900 m-0 mb-5">Revenue Trends</h2>
-          <Chart data={getFilteredData()} type="bar" filter={timeFilter} />
-        </div>
-      </div>
+     
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
