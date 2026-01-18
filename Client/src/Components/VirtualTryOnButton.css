@@ -1,0 +1,164 @@
+/* ============================================================================
+   VIRTUAL TRY-ON FLOATING BUTTON STYLES
+   ============================================================================ */
+
+.virtual-tryon-button-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+}
+
+/* Main button */
+.virtual-tryon-button {
+    position: relative;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: visible;
+}
+
+.virtual-tryon-button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 28px rgba(239, 68, 68, 0.5);
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+.virtual-tryon-button:active {
+    transform: translateY(-1px) scale(1.02);
+}
+
+/* Glasses icon */
+.glasses-icon {
+    font-size: 28px;
+    color: white;
+    z-index: 2;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Pulse ring animation */
+.pulse-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid #ef4444;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    z-index: 1;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* Tooltip */
+.virtual-tryon-tooltip {
+    position: absolute;
+    bottom: 75px;
+    right: 0;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    animation: tooltipFadeIn 0.3s ease-out;
+}
+
+.tooltip-text {
+    display: block;
+}
+
+.tooltip-arrow {
+    position: absolute;
+    bottom: -6px;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid rgba(0, 0, 0, 0.9);
+}
+
+@keyframes tooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .virtual-tryon-button-container {
+        bottom: 20px;
+        right: 20px;
+    }
+
+    .virtual-tryon-button {
+        width: 55px;
+        height: 55px;
+    }
+
+    .glasses-icon {
+        font-size: 24px;
+    }
+
+    .virtual-tryon-tooltip {
+        font-size: 12px;
+        padding: 10px 14px;
+        bottom: 65px;
+    }
+}
+
+/* Accessibility: Focus state */
+.virtual-tryon-button:focus {
+    outline: 3px solid #fca5a5;
+    outline-offset: 3px;
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+    .virtual-tryon-tooltip {
+        background: rgba(255, 255, 255, 0.95);
+        color: #1f2937;
+    }
+
+    .tooltip-arrow {
+        border-top-color: rgba(255, 255, 255, 0.95);
+    }
+}

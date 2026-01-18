@@ -24,6 +24,7 @@ import Profile from "./Pages/Profile";
 import Cancellations from "./Pages/Cancellations";
 import SearchResults from "./Pages/SearchResults";
 import Admin from "./Pages/admin/index"
+import GlassesTryOnPage from "./Pages/GlassesTryOnPage";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

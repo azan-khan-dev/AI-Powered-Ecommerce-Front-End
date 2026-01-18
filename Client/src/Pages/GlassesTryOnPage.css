@@ -1,0 +1,203 @@
+/* ============================================================================
+   GLASSES TRY-ON PAGE STYLES
+   ============================================================================ */
+
+.tryon-page-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: #000;
+}
+
+/* Top Bar */
+.tryon-top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    z-index: 100;
+}
+
+.tryon-back-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tryon-back-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-3px);
+}
+
+.tryon-back-button svg {
+    font-size: 18px;
+}
+
+.tryon-title {
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    letter-spacing: 0.5px;
+}
+
+.tryon-spacer {
+    width: 120px;
+    /* Same as back button width for centering */
+}
+
+/* Glasses Selector Container */
+.tryon-selector-container {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    max-width: 90%;
+}
+
+.tryon-selector-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.tryon-selector-grid {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Glasses Button */
+.tryon-glasses-button {
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.tryon-glasses-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.tryon-glasses-button:hover {
+    transform: translateY(-2px);
+    border-color: rgba(239, 68, 68, 0.5);
+    box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+}
+
+.tryon-glasses-button.active {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border-color: #ef4444;
+    box-shadow: 0 5px 20px rgba(239, 68, 68, 0.5);
+    transform: translateY(-2px);
+}
+
+.tryon-glasses-button.active::before {
+    opacity: 1;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .tryon-top-bar {
+        height: 60px;
+        padding: 0 15px;
+    }
+
+    .tryon-back-button {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+
+    .tryon-back-button span {
+        display: none;
+    }
+
+    .tryon-title {
+        font-size: 18px;
+    }
+
+    .tryon-spacer {
+        width: 50px;
+    }
+
+    .tryon-selector-container {
+        bottom: 15px;
+        padding: 15px 20px;
+        border-radius: 15px;
+    }
+
+    .tryon-selector-label {
+        font-size: 11px;
+        margin-bottom: 10px;
+    }
+
+    .tryon-selector-grid {
+        gap: 8px;
+    }
+
+    .tryon-glasses-button {
+        padding: 10px 16px;
+        font-size: 12px;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+    .tryon-selector-grid {
+        max-width: 100%;
+    }
+
+    .tryon-glasses-button {
+        padding: 8px 12px;
+        font-size: 11px;
+    }
+}

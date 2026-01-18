@@ -8,13 +8,16 @@ import BannerWithTimer from "../Components/Banner/Banner";
 import Our_products from "../Components/OurProducts/Our_products";
 import Featured from "../Components/Featured/Featured";
 import Others from "../Components/Others/Others";
+import VirtualTryOnButton from "../Components/VirtualTryOnButton";
 
-const Home = () =>
-{
+const Home = () => {
 
   return (
-    
+
     <div className="flex flex-col items-center w-full ">
+      {/* Virtual Try-On Floating Button */}
+      <VirtualTryOnButton />
+
       {/* Slider: Full width */}
       <div className="sm:w-[85%] mt-9">
         <Slider />

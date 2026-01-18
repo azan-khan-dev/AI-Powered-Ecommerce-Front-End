@@ -1,0 +1,220 @@
+/* ============================================================================
+   VIRTUAL TRY-ON MODAL STYLES
+   ============================================================================ */
+
+.tryon-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.tryon-modal-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Top Bar */
+.tryon-modal-top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 30px;
+    z-index: 10000;
+}
+
+.tryon-modal-title {
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    letter-spacing: 0.5px;
+}
+
+.tryon-modal-close-button {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    width: 45px;
+    height: 45px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 28px;
+}
+
+.tryon-modal-close-button:hover {
+    background: rgba(239, 68, 68, 0.9);
+    border-color: #ef4444;
+    transform: rotate(90deg) scale(1.1);
+    box-shadow: 0 5px 20px rgba(239, 68, 68, 0.5);
+}
+
+/* Glasses Selector Container */
+.tryon-modal-selector-container {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    max-width: 90%;
+}
+
+.tryon-modal-selector-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.tryon-modal-selector-grid {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Glasses Button */
+.tryon-modal-glasses-button {
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.tryon-modal-glasses-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.tryon-modal-glasses-button:hover {
+    transform: translateY(-2px);
+    border-color: rgba(239, 68, 68, 0.5);
+    box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+}
+
+.tryon-modal-glasses-button.active {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border-color: #ef4444;
+    box-shadow: 0 5px 20px rgba(239, 68, 68, 0.5);
+    transform: translateY(-2px);
+}
+
+.tryon-modal-glasses-button.active::before {
+    opacity: 1;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .tryon-modal-top-bar {
+        height: 60px;
+        padding: 0 15px;
+    }
+
+    .tryon-modal-title {
+        font-size: 18px;
+    }
+
+    .tryon-modal-close-button {
+        width: 40px;
+        height: 40px;
+        font-size: 24px;
+        top: 15px;
+        right: 15px;
+    }
+
+    .tryon-modal-selector-container {
+        bottom: 15px;
+        padding: 15px 20px;
+        border-radius: 15px;
+    }
+
+    .tryon-modal-selector-label {
+        font-size: 11px;
+        margin-bottom: 10px;
+    }
+
+    .tryon-modal-selector-grid {
+        gap: 8px;
+    }
+
+    .tryon-modal-glasses-button {
+        padding: 10px 16px;
+        font-size: 12px;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+    .tryon-modal-selector-grid {
+        max-width: 100%;
+    }
+
+    .tryon-modal-glasses-button {
+        padding: 8px 12px;
+        font-size: 11px;
+    }
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+    overflow: hidden;
+}
