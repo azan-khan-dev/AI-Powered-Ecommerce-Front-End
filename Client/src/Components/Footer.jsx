@@ -2,15 +2,16 @@ import { Link } from "react-router-dom";
 import { FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import { CiTwitter } from "react-icons/ci";
 import { VscSend } from "react-icons/vsc";
-function Footer()
-{
+import { useSelector } from "react-redux";
+function Footer() {
+    const siteSettings = useSelector((state) => state.settings.siteSettings);
     return (
         <footer className="bg-black text-white px-4 py-10">
             <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-8 gap-y-16">
 
                 {/* Exclusive */}
                 <div>
-                    <h3 className="text-lg font-semibold mb-6">Exclusive</h3>
+                    <h3 className="text-lg font-semibold mb-6">{siteSettings.siteName}</h3>
                     <p className="text-sm mb-4">Subscribe</p>
                     <p className="text-sm mb-4">Get 10% off your first order</p>
                     <div className="relative w-[180px] mb-4">
@@ -34,9 +35,9 @@ function Footer()
                 {/* Support */}
                 <div>
                     <h3 className="text-lg font-semibold mb-6">Support</h3>
-                    <p className="text-sm mb-5">111 Bijoy sarani, Dhaka <br /> DH 1515, Bangladesh.</p>
-                    <p className="text-sm mb-5">exclusive@gmail.com</p>
-                    <p className="text-sm mb-5">+88015-88888-9999</p>
+                    <p className="text-sm mb-5">NCBA&E University FLC Campus <br /> Lahore, Pakistan.</p>
+                    <p className="text-sm mb-5">{siteSettings.contactEmail}</p>
+                    <p className="text-sm mb-5">{siteSettings.contactPhone}</p>
                 </div>
 
                 {/* Account */}
@@ -44,14 +45,14 @@ function Footer()
                     <h3 className="text-lg font-semibold mb-6">Account</h3>
                     <ul className="text-sm">
                         <li className="mb-4">
-                            <Link to="/dashboard" className="relative inline-block group">
-                                My Account
+                            <Link to="/profile" className="relative inline-block group">
+                                Profile
                                 <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-white transition-all duration-500 ease-in-out group-hover:w-full"></span>
                             </Link>
                         </li>
                         <li className="mb-4">
                             <Link to="/login" className="relative inline-block group">
-                                Login / Register
+                                Login
                                 <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-white transition-all duration-500 ease-in-out group-hover:w-full"></span>
                             </Link>
                         </li>

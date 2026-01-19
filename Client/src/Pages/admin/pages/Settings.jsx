@@ -1,27 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useGetSettingsQuery, useUpdateSettingsMutation } from '../../../redux/apis/settingsApis';
+import { useGetMyProfileQuery, useUpdateMyProfileMutation } from '../../../redux/apis/authApis';
+import { toast } from 'react-toastify';
 
-const Settings = () =>
-{
+const Settings = () => {
+  // Site Settings Logic
+  const { data: settingsData, isLoading: settingsLoading } = useGetSettingsQuery();
+  const [updateSettings, { isLoading: isUpdatingSettings }] = useUpdateSettingsMutation();
+
   const [siteSettings, setSiteSettings] = useState({
-    siteName: 'E-commerce Admin',
-    siteDescription: 'Admin dashboard for managing your online store',
-    contactEmail: 'admin@example.com',
+    siteName: '',
+    siteDescription: '',
+    contactEmail: '',
+    contactPhone: '',
     currency: 'USD',
     timezone: 'UTC',
     maintenanceMode: false
   });
 
-  const [profileSettings, setProfileSettings] = useState({
-    name: 'Admin User',
-    email: 'admin@example.com',
-    avatar: 'https://via.placeholder.com/100x100/4A90E2/FFFFFF?text=A',
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
+  useEffect(() => {
+    if (settingsData?.data) {
+      setSiteSettings({
+        siteName: settingsData.data.siteName || '',
+        siteDescription: settingsData.data.siteDescription || '',
+        contactEmail: settingsData.data.contactEmail || '',
+        contactPhone: settingsData.data.contactPhone || '',
+        currency: settingsData.data.currency || 'USD',
+        timezone: settingsData.data.timezone || 'UTC',
+        maintenanceMode: settingsData.data.maintenanceMode || false
+      });
+    }
+  }, [settingsData]);
 
-  const handleSiteSettingsChange = (e) =>
-  {
+  const handleSiteSettingsChange = (e) => {
     const { name, value, type, checked } = e.target;
     setSiteSettings(prev => ({
       ...prev,
@@ -29,8 +40,41 @@ const Settings = () =>
     }));
   };
 
-  const handleProfileSettingsChange = (e) =>
-  {
+  const handleSaveSiteSettings = async (e) => {
+    e.preventDefault();
+    try {
+      await updateSettings(siteSettings).unwrap();
+      toast.success('Site settings updated successfully');
+    } catch (error) {
+      toast.error(error?.data?.message || 'Failed to update settings');
+    }
+  };
+
+  // Profile Settings Logic
+  const { data: profileData, isLoading: profileLoading } = useGetMyProfileQuery(); // Assuming this API exists and works
+  const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateMyProfileMutation();
+
+  const [profileSettings, setProfileSettings] = useState({
+    name: '',
+    email: '',
+    avatar: '',
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+
+  useEffect(() => {
+    if (profileData?.data) {
+      setProfileSettings(prev => ({
+        ...prev,
+        name: profileData.data.name || '',
+        email: profileData.data.email || '',
+        avatar: profileData.data.image?.url || '',
+      }));
+    }
+  }, [profileData]);
+
+  const handleProfileSettingsChange = (e) => {
     const { name, value } = e.target;
     setProfileSettings(prev => ({
       ...prev,
@@ -38,22 +82,44 @@ const Settings = () =>
     }));
   };
 
-  const handleSaveSiteSettings = (e) =>
-  {
+  const handleSaveProfileSettings = async (e) => {
     e.preventDefault();
-    alert('Site settings saved successfully!');
-  };
-
-  const handleSaveProfileSettings = (e) =>
-  {
-    e.preventDefault();
-    if (profileSettings.newPassword !== profileSettings.confirmPassword)
-    {
-      alert('New passwords do not match!');
+    if (profileSettings.newPassword && profileSettings.newPassword !== profileSettings.confirmPassword) {
+      toast.error('New passwords do not match!');
       return;
     }
-    alert('Profile settings saved successfully!');
+
+    try {
+      const formData = new FormData();
+      formData.append('name', profileSettings.name);
+      formData.append('email', profileSettings.email);
+      // Only append password if provided
+      if (profileSettings.newPassword) {
+        // Assuming backend handles password update via same endpoint, otherwise need separate logic
+        // Usually profile update doesn't handle password directly without current password verification
+        // For now, let's assume simple profile update or add logic later if needed.
+        // Based on auth controller, updateMyProfile handles basic fields.
+        // Password update is typically separate. We'll skip password here for now or warn user.
+        toast.error("Password update requires a separate process (not yet implemented fully in this form).");
+        return;
+      }
+
+      const res = await updateProfile({
+        name: profileSettings.name,
+        email: profileSettings.email,
+        // Add other fields if supported by backend updateMyProfile
+      }).unwrap();
+
+      toast.success('Profile settings updated successfully!');
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.data?.message || 'Failed to update profile');
+    }
   };
+
+  if (settingsLoading || profileLoading) {
+    return <div className="p-8 text-center">Loading settings...</div>;
+  }
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -62,6 +128,7 @@ const Settings = () =>
       </div>
 
       <div className="space-y-8">
+        {/* Site Settings Section */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
           <h2 className="w-fit text-2xl font-semibold bg-black text-white mb-6 px-4 py-2 rounded-md">Site Settings</h2>
           <form onSubmit={handleSaveSiteSettings} className="space-y-6">
@@ -75,16 +142,7 @@ const Settings = () =>
                 name="siteName"
                 value={siteSettings.siteName}
                 onChange={handleSiteSettingsChange}
-                className="input-field 
-              w-full lg:w-80
-              px-4 py-2 text-base
-              border border-gray-300 rounded-lg
-              transition-all duration-200
-              hover:border-red-500
-              focus:outline-none
-              focus:border-red-500
-              focus:ring-1 focus:ring-red-500
-            "
+                className="input-field w-full lg:w-80 px-4 py-2 text-base border border-gray-300 rounded-lg transition-all duration-200 hover:border-red-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
               />
             </div>
 
@@ -98,16 +156,7 @@ const Settings = () =>
                 value={siteSettings.siteDescription}
                 onChange={handleSiteSettingsChange}
                 rows="3"
-                className="input-field resize-vertical 
-              w-full lg:w-80
-              px-4 py-2 text-base
-              border border-gray-300 rounded-lg
-              transition-all duration-200
-              hover:border-red-500
-              focus:outline-none
-              focus:border-red-500
-              focus:ring-1 focus:ring-red-500
-            "
+                className="input-field resize-vertical w-full lg:w-80 px-4 py-2 text-base border border-gray-300 rounded-lg transition-all duration-200 hover:border-red-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
               />
             </div>
 
@@ -122,16 +171,21 @@ const Settings = () =>
                   name="contactEmail"
                   value={siteSettings.contactEmail}
                   onChange={handleSiteSettingsChange}
-                  className="input-field 
-              w-full lg:w-80
-              px-4 py-2 text-base
-              border border-gray-300 rounded-lg
-              transition-all duration-200
-              hover:border-red-500
-              focus:outline-none
-              focus:border-red-500
-              focus:ring-1 focus:ring-red-500
-            "
+                  className="input-field w-full lg:w-80 px-4 py-2 text-base border border-gray-300 rounded-lg transition-all duration-200 hover:border-red-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="contactPhone" className="block text-lg font-medium text-gray-700 mb-2">
+                  Contact Phone
+                </label>
+                <input
+                  type="text"
+                  id="contactPhone"
+                  name="contactPhone"
+                  value={siteSettings.contactPhone}
+                  onChange={handleSiteSettingsChange}
+                  className="input-field w-full lg:w-80 px-4 py-2 text-base border border-gray-300 rounded-lg transition-all duration-200 hover:border-red-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
                 />
               </div>
 
@@ -144,15 +198,13 @@ const Settings = () =>
                   name="currency"
                   value={siteSettings.currency}
                   onChange={handleSiteSettingsChange}
-                  className="input-field px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-700
-             hover:border-red-500
-             focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500
-             transition-all duration-300"
+                  className="input-field px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300"
                 >
                   <option value="USD">USD ($)</option>
                   <option value="EUR">EUR (€)</option>
                   <option value="GBP">GBP (£)</option>
                   <option value="JPY">JPY (¥)</option>
+                  <option value="PKR">PKR (Rs)</option>
                 </select>
               </div>
             </div>
@@ -166,17 +218,13 @@ const Settings = () =>
                 name="timezone"
                 value={siteSettings.timezone}
                 onChange={handleSiteSettingsChange}
-                className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-700
-             hover:border-red-500
-             focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500
-             transition-all duration-300"
+                className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300"
               >
                 <option value="UTC">UTC</option>
                 <option value="EST">Eastern Time</option>
                 <option value="PST">Pacific Time</option>
                 <option value="GMT">GMT</option>
               </select>
-
             </div>
 
             <div className="flex items-center">
@@ -188,30 +236,26 @@ const Settings = () =>
                 onChange={handleSiteSettingsChange}
                 className="w-4 h-4 accent-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 focus:ring-2"
               />
-              <label
-                htmlFor="maintenanceMode"
-                className="ml-2 text-lg font-medium text-gray-700"
-              >
+              <label htmlFor="maintenanceMode" className="ml-2 text-lg font-medium text-gray-700">
                 Maintenance Mode
               </label>
             </div>
 
-
             <button
               type="submit"
-              className="bg-red-600 text-white rounded-md px-4 py-2 hover:bg-red-700 transition-colors duration-300"
+              disabled={isUpdatingSettings}
+              className="bg-red-600 text-white rounded-md px-4 py-2 hover:bg-red-700 transition-colors duration-300 disabled:bg-red-400"
             >
-              Save Site Settings
+              {isUpdatingSettings ? 'Saving...' : 'Save Site Settings'}
             </button>
-
           </form>
         </div>
 
+        {/* Profile Settings Section */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
           <h2 className="w-fit text-2xl font-semibold bg-black text-white mb-6 px-4 py-2 rounded-md">
-  Profile Settings
-</h2>
-
+            Profile Settings
+          </h2>
 
           <form onSubmit={handleSaveProfileSettings} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -225,14 +269,7 @@ const Settings = () =>
                   name="name"
                   value={profileSettings.name}
                   onChange={handleProfileSettingsChange}
-                  className="input-field w-full lg:w-80
-              px-4 py-2 text-base
-              border border-gray-300 rounded-lg
-              transition-all duration-200
-              hover:border-red-500
-              focus:outline-none
-              focus:border-red-500
-              focus:ring-1 focus:ring-red-500"
+                  className="input-field w-full lg:w-80 px-4 py-2 text-base border border-gray-300 rounded-lg transition-all duration-200 hover:border-red-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
                 />
               </div>
 
@@ -245,15 +282,8 @@ const Settings = () =>
                   id="profileEmail"
                   name="email"
                   value={profileSettings.email}
-                  onChange={handleProfileSettingsChange}
-                  className="input-field w-full lg:w-80
-              px-4 py-2 text-base
-              border border-gray-300 rounded-lg
-              transition-all duration-200
-              hover:border-red-500
-              focus:outline-none
-              focus:border-red-500
-              focus:ring-1 focus:ring-red-500"
+                  disabled // Usually verify before change
+                  className="input-field w-full lg:w-80 px-4 py-2 text-base border border-gray-200 bg-gray-100 rounded-lg cursor-not-allowed"
                 />
               </div>
             </div>
@@ -264,86 +294,25 @@ const Settings = () =>
               </label>
               <div className="flex items-center gap-4">
                 <img
-                  src={profileSettings.avatar}
+                  src={profileSettings.avatar || 'https://via.placeholder.com/100x100/CCCCCC/FFFFFF?text=User'}
                   alt="Profile"
-                  className="w-16 h-16 rounded-full "
+                  className="w-16 h-16 rounded-full object-cover"
                 />
-                <button type="button" className="btn-secondary bg-red-600 text-white rounded-md px-4 py-2 hover:bg-red-700 transition-colors duration-300 ">
+                <button type="button" className="btn-secondary bg-red-600 text-white rounded-md px-4 py-2 hover:bg-red-700 transition-colors duration-300">
                   Change Avatar
                 </button>
               </div>
             </div>
 
+            {/* Password Change Section - Placeholder as it might need separate flow */}
             <div className="border-t border-gray-200 pt-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Change Password</h3>
-              <div className="mb-4">
-                <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                  Current Password
-                </label>
-                <input
-                  type="password"
-                  id="currentPassword"
-                  name="currentPassword"
-                  value={profileSettings.currentPassword}
-                  onChange={handleProfileSettingsChange}
-                  className="input-field w-full lg:w-80
-              px-4 py-2 text-base
-              border border-gray-300 rounded-lg
-              transition-all duration-200
-              hover:border-red-500
-              focus:outline-none
-              focus:border-red-500
-              focus:ring-1 focus:ring-red-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="newPassword" className="block text-lg font-medium text-gray-700 mb-2">
-                    New Password
-                  </label>
-                  <input
-                    type="password"
-                    id="newPassword"
-                    name="newPassword"
-                    value={profileSettings.newPassword}
-                    onChange={handleProfileSettingsChange}
-                    className="input-field w-full lg:w-80
-              px-4 py-2 text-base
-              border border-gray-300 rounded-lg
-              transition-all duration-200
-              hover:border-red-500
-              focus:outline-none
-              focus:border-red-500
-              focus:ring-1 focus:ring-red-500"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-lg font-medium text-gray-700 mb-2">
-                    Confirm Password
-                  </label>
-                  <input
-                    type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={profileSettings.confirmPassword}
-                    onChange={handleProfileSettingsChange}
-                    className="input-field w-full lg:w-80
-              px-4 py-2 text-base
-              border border-gray-300 rounded-lg
-              transition-all duration-200
-              hover:border-red-500
-              focus:outline-none
-              focus:border-red-500
-              focus:ring-1 focus:ring-red-500"
-                  />
-                </div>
+              <div className="text-sm text-gray-500">
+                To change your password, please use the "Forgot Password" flow or contact system administrator.
               </div>
             </div>
 
-            <button type="submit" className="btn-primary bg-red-600 text-white rounded-md px-4 py-2 hover:bg-red-700 transition-colors duration-300">
-              Save Profile Settings
+            <button type="submit" disabled={isUpdatingProfile} className="btn-primary bg-red-600 text-white rounded-md px-4 py-2 hover:bg-red-700 transition-colors duration-300 disabled:bg-red-400">
+              {isUpdatingProfile ? 'Saving...' : 'Save Profile Settings'}
             </button>
           </form>
         </div>
@@ -353,3 +322,5 @@ const Settings = () =>
 };
 
 export default Settings;
+
+

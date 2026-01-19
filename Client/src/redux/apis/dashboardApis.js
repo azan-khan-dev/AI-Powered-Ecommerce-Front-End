@@ -42,6 +42,15 @@ const dashboardApis = createApi({
         method: "GET",
       }),
     }),
+
+    // Get all users
+    getAllUsers: builder.query({
+      query: (params) => ({
+        url: "/users",
+        method: "GET",
+        params,
+      }),
+    }),
   }),
 });
 
@@ -50,6 +59,7 @@ export const {
   useGetSalesAnalyticsQuery,
   useGetProductAnalyticsQuery,
   useGetCustomerAnalyticsQuery,
+  useGetAllUsersQuery,
 } = dashboardApis;
 
 export default dashboardApis;

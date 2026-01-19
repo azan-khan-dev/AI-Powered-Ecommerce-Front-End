@@ -25,6 +25,7 @@ import Cancellations from "./Pages/Cancellations";
 import SearchResults from "./Pages/SearchResults";
 import Admin from "./Pages/admin/index"
 import GlassesTryOnPage from "./Pages/GlassesTryOnPage";
+import { setSiteSettings } from "./redux/slices/settingsSlice";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -35,6 +36,7 @@ import { useGetUserWishlistQuery } from "./redux/apis/wishlistApis";
 import { setWishlistItems } from "./Features/Wishlist/WishlistSlice";
 import { useGetMyOrdersQuery } from "./redux/apis/orderApis";
 import { setOrders, setCancelledOrders } from "./Features/Orders/OrdersSlice";
+import { useGetPublicConfigQuery } from "./redux/apis/settingsApis";
 
 function App() {
   const dispatch = useDispatch();
@@ -64,6 +66,19 @@ function App() {
     }
   }, [wishlistData, data, dispatch]);
 
+  // Fetch public config
+  const { data: configData } = useGetPublicConfigQuery();
+  console.log("configData", configData);
+
+  useEffect(() => {
+    if (configData?.data?.siteName) {
+      document.title = configData.data.siteName;
+      dispatch(setSiteSettings(configData.data));
+    }
+  }, [configData]);
+
+  const isMaintenanceMode = configData?.data?.maintenanceMode && data?.data?.role !== "admin";
+
   useEffect(() => {
     if (ordersData?.data && (data?.user || data?.data)) {
       const allOrders = ordersData.data;
@@ -74,6 +89,22 @@ function App() {
       dispatch(setCancelledOrders(cancelledOrders));
     }
   }, [ordersData, data, dispatch]);
+
+  const maintenanceModeBarForAdmin = configData?.data?.maintenanceMode && data?.data?.role === "admin";
+
+  if (isMaintenanceMode) {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
+        <h1 className="text-4xl font-bold text-gray-800 mb-4">Under Maintenance</h1>
+        <p className="text-lg text-gray-600 text-center max-w-md">
+          We are currently performing scheduled maintenance. We should be back online shortly. Thank you for your patience.
+        </p>
+        {configData?.data?.contactEmail && (
+          <p className="mt-8 text-sm text-gray-500">Contact: {configData.data.contactEmail}</p>
+        )}
+      </div>
+    );
+  }
 
 
   if (isLoading) {
@@ -86,6 +117,13 @@ function App() {
 
   return (
     <>
+      {maintenanceModeBarForAdmin && (
+        <div className="bg-yellow-50 border-b border-yellow-200 p-3 text-center sticky top-0 z-50">
+          <p className="text-sm font-medium text-yellow-800">
+            ⚠️ Site is in maintenance mode. Only admins can access.
+          </p>
+        </div>
+      )}
       <Header />
 
       <main className="flex-grow">

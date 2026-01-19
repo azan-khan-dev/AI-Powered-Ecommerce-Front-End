@@ -40,14 +40,14 @@ const BannerWithTimer = () => {
 
   return (
     <div className="flex flex-col md:flex-row items-center justify-between bg-black overflow-hidden shadow-lg px-4 sm:px-10 md:px-12 py-8 sm:py-10 md:py-13 mt-10 max-h-[800px]">
-      
+
       {/* LEFT SECTION */}
       <div className="flex flex-col items-start text-left gap-4 max-w-xl pl-10">
         <span className="text-red-500 text-sm sm:text-base font-bold uppercase">
           Category
         </span>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight">
-          Enhance your <br /> Music Experience
+          Enhance your <br /> Visual Experience
         </h1>
 
         {/* TIMER */}
@@ -67,10 +67,10 @@ const BannerWithTimer = () => {
 
         {/* BUTTON */}
         <button
-          onClick={() => navigate("/products/Speakers")}
+          onClick={() => navigate("/products/Glasses")}
           className="mt-5 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-medium rounded-sm transition-all duration-200 cursor-pointer"
         >
-          Buy Now
+          Shop Now
         </button>
       </div>
 

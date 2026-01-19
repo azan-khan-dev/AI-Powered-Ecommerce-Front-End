@@ -7,6 +7,7 @@ import {
 } from '../../../redux/apis/productApis';
 import ProductCard from '../components/ProductCard';
 import ProductForm from '../components/ProductForm';
+import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
 import { toast } from 'react-toastify';
 
 const Products = () => {
@@ -23,6 +24,8 @@ const Products = () => {
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
   const [deleteProduct] = useDeleteProductMutation();
   const [deletingProductId, setDeletingProductId] = useState(null);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const allProducts = productsData?.data || [];
 
@@ -65,18 +68,28 @@ const Products = () => {
     setShowForm(true);
   };
 
-  const handleDeleteProduct = async (productId) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      setDeletingProductId(productId);
-      try {
-        await deleteProduct(productId).unwrap();
-        toast.success('Product deleted successfully');
-        refetch();
-      } catch (error) {
-        toast.error(error?.data?.message || 'Failed to delete product');
-      } finally {
-        setDeletingProductId(null);
-      }
+  const handleDeleteClick = (productId) => {
+    const product = allProducts.find(p => p._id === productId);
+    if (product) {
+      setProductToDelete(product);
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+
+    setDeletingProductId(productToDelete._id);
+    try {
+      await deleteProduct(productToDelete._id).unwrap();
+      toast.success('Product deleted successfully');
+      setIsDeleteModalOpen(false);
+      setProductToDelete(null);
+      refetch();
+    } catch (error) {
+      toast.error(error?.data?.message || 'Failed to delete product');
+    } finally {
+      setDeletingProductId(null);
     }
   };
 
@@ -150,7 +163,7 @@ const Products = () => {
         <div className="flex gap-2 flex-wrap w-full sm:w-auto">
           {categoryOptions.map(category => {
             const isActive = category === filterCategory;
-            return ( 
+            return (
               <button
                 key={category}
                 className={`px-4 py-2 rounded-lg text-sm font-medium
@@ -180,7 +193,7 @@ const Products = () => {
               image: product.images?.[0]?.url,
             }}
             onEdit={handleEditProduct}
-            onDelete={handleDeleteProduct}
+            onDelete={handleDeleteClick}
             isDeleting={deletingProductId === product._id}
           />
         ))}
@@ -217,10 +230,10 @@ const Products = () => {
           product={
             editingProduct
               ? {
-                  ...editingProduct,
-                  title: editingProduct.name,
-                  image: editingProduct.images?.[0]?.url,
-                }
+                ...editingProduct,
+                title: editingProduct.name,
+                image: editingProduct.images?.[0]?.url,
+              }
               : null
           }
           onSave={handleSaveProduct}
@@ -231,6 +244,15 @@ const Products = () => {
           isLoading={isCreating || isUpdating}
         />
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        productName={productToDelete?.name}
+        isLoading={deletingProductId === productToDelete?._id}
+      />
     </div>
   );
 };

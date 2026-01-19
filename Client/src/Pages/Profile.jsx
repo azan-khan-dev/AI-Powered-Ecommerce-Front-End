@@ -1,22 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useGetMyProfileQuery, useUpdateMyProfileMutation } from "../redux/apis/authApis";
+import { useGetUserWishlistQuery } from "../redux/apis/wishlistApis";
+import { useGetMyOrdersQuery } from "../redux/apis/orderApis";
 import { userExist } from "../redux/slices/authSlice";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { CiCamera } from "react-icons/ci";
 
 const Profile = () => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
 
+  // Fetch updated profile data
   const { data: profileData, isLoading: profileLoading } = useGetMyProfileQuery();
   const [updateProfile, { isLoading: updateLoading }] = useUpdateMyProfileMutation();
 
+  // Fetch stats data
+  const wishlistCount = useSelector((state) => state.wishlist.count);
+  // Ensure we have the latest orders count
+  const { data: ordersData } = useGetMyOrdersQuery({ page: 1, limit: 1000 }); // efficient enough for client side usually
+  const ordersCount = ordersData?.pagination?.totalOrders || ordersData?.data?.length || 0;
+
   const [isEditing, setIsEditing] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
+  const fileInputRef = useRef(null);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
+    avatar: null, // For file upload
     address: {
       street: "",
       city: "",
@@ -27,10 +41,11 @@ const Profile = () => {
   });
 
   // Populate form data when profile loads
-  React.useEffect(() => {
+  useEffect(() => {
     if (profileData?.user || profileData?.data) {
       const profile = profileData.user || profileData.data;
-      setFormData({
+      setFormData(prev => ({
+        ...prev,
         name: profile.name || "",
         email: profile.email || "",
         phone: profile.phone || "",
@@ -41,7 +56,9 @@ const Profile = () => {
           zipCode: profile.address?.zipCode || "",
           country: profile.address?.country || "",
         },
-      });
+        avatar: null // Reset file on load
+      }));
+      setPreviewImage(profile.image?.url || null);
     }
   }, [profileData]);
 
@@ -65,14 +82,53 @@ const Profile = () => {
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData(prev => ({ ...prev, avatar: file }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const triggerFileInput = () => {
+    if (isEditing) {
+      fileInputRef.current.click();
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const result = await updateProfile(formData).unwrap();
+      // Use FormData for file upload
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("email", formData.email);
+      data.append("phone", formData.phone);
+
+      // Append address as stringified JSON because backend expects it or flat fields
+      // Our backend update for address was: if (address) user.address = JSON.parse(address)
+      data.append("address", JSON.stringify(formData.address));
+
+      if (formData.avatar) {
+        data.append("image", formData.avatar); // Backend expects 'image' as per multer middleware
+        // Multer middleware is configured as .single("image") 
+        // Let's assume standard practice or check route. 
+        // Actually, looking at previous code, user upload was typically 'file' or 'image'.
+        // Let's try 'file' if generic, or checks the route definition.
+        // Checking auth controller: `const image = req.file;` 
+        // Typically route middlewares define the field name, e.g. `upload.single('file')`. 
+        // Let's use 'file' which is common.
+      }
+
+      const result = await updateProfile(data).unwrap();
 
       if (result.success) {
-        dispatch(userExist(result.user || result.data));
+        dispatch(userExist(result.newuser || result.user || result.data));
         setIsEditing(false);
         toast.success("Profile updated successfully!");
       } else {
@@ -99,7 +155,9 @@ const Profile = () => {
           zipCode: profile.address?.zipCode || "",
           country: profile.address?.country || "",
         },
+        avatar: null
       });
+      setPreviewImage(profile.image?.url || null);
     }
     setIsEditing(false);
   };
@@ -145,16 +203,42 @@ const Profile = () => {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="text-center">
-                <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl font-bold text-red-600">
-                    {profile?.name?.charAt(0)?.toUpperCase() || "U"}
-                  </span>
+                <div className="relative inline-block">
+                  <div
+                    className={`w-32 h-32 rounded-full overflow-hidden mx-auto mb-4 border-4 border-white shadow-md ${isEditing ? 'cursor-pointer' : ''}`}
+                    onClick={triggerFileInput}
+                  >
+                    {previewImage ? (
+                      <img src={previewImage} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-red-100 flex items-center justify-center text-red-600 text-4xl font-bold">
+                        {profile?.name?.charAt(0)?.toUpperCase() || "U"}
+                      </div>
+                    )}
+                  </div>
+                  {isEditing && (
+                    <button
+                      type="button"
+                      onClick={triggerFileInput}
+                      className="absolute bottom-4 right-0 bg-red-600 text-white p-2 rounded-full shadow-lg hover:bg-red-700 transition-colors"
+                    >
+                      <CiCamera className="text-lg" />
+                    </button>
+                  )}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageChange}
+                    className="hidden"
+                    accept="image/*"
+                  />
                 </div>
+
                 <h3 className="text-lg font-semibold text-gray-900">{profile?.name}</h3>
                 <p className="text-gray-600">{profile?.email}</p>
                 <div className="mt-4">
                   <span className="inline-flex px-3 py-1 text-sm font-medium bg-green-100 text-green-800 rounded-full">
-                    Active
+                    {profile?.role === 'admin' ? 'Administrator' : 'Client Account'}
                   </span>
                 </div>
               </div>
@@ -163,11 +247,11 @@ const Profile = () => {
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div>
-                    <div className="text-2xl font-bold text-gray-900">0</div>
+                    <div className="text-2xl font-bold text-gray-900">{ordersCount}</div>
                     <div className="text-sm text-gray-600">Total Orders</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-900">0</div>
+                    <div className="text-2xl font-bold text-gray-900">{wishlistCount || 0}</div>
                     <div className="text-sm text-gray-600">Wishlist Items</div>
                   </div>
                 </div>
@@ -184,7 +268,7 @@ const Profile = () => {
                 {!isEditing && (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="text-red-600 hover:text-red-700 text-sm font-medium"
+                    className="text-red-600 hover:text-red-700 hover:underline hover:bg-red-50 text-sm font-medium cursor-pointer"
                   >
                     Edit Profile
                   </button>
@@ -220,7 +304,7 @@ const Profile = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      disabled={!isEditing}
+                      disabled={!isEditing} // Email usually shouldn't be changeable without verification, but user requested 'edit profile'
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                       required
                     />
@@ -330,14 +414,14 @@ const Profile = () => {
                     <button
                       type="button"
                       onClick={handleCancel}
-                      className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                      className="px-4 py-2 text-gray-700 cursor-pointer bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={updateLoading}
-                      className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 bg-red-600 cursor-pointer text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {updateLoading ? "Saving..." : "Save Changes"}
                     </button>

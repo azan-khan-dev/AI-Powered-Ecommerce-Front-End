@@ -4,6 +4,7 @@ import { FaBoxOpen } from "react-icons/fa";
 import { MdOutlineShoppingCart } from "react-icons/md";
 import { FaUsers } from "react-icons/fa6";
 import { IoMdSettings } from "react-icons/io";
+import { MdPayment } from "react-icons/md";
 import { HiMenu, HiX } from "react-icons/hi";
 
 const Sidebar = ({ currentPage, setCurrentPage }) => {
@@ -13,6 +14,7 @@ const Sidebar = ({ currentPage, setCurrentPage }) => {
     { id: 'dashboard', label: 'Dashboard', icon: <MdDashboard /> },
     { id: 'products', label: 'Products', icon: <FaBoxOpen /> },
     { id: 'orders', label: 'Orders', icon: <MdOutlineShoppingCart /> },
+    { id: 'payments', label: 'Payments', icon: <MdPayment /> },
     { id: 'users', label: 'Users', icon: <FaUsers /> },
     { id: 'settings', label: 'Settings', icon: <IoMdSettings /> }
   ];
@@ -36,22 +38,21 @@ const Sidebar = ({ currentPage, setCurrentPage }) => {
           <ul className="list-none m-0 p-0">
             {menuItems.map(item => (
               <li key={item.id} className="mb-1">
-               <button
-  className={`flex items-center w-full px-5 py-3 text-left 
+                <button
+                  className={`flex items-center w-full px-5 py-3 text-left 
     rounded-r-2xl mr-2 transition-all duration-300
-    ${
-      currentPage === item.id
-        ? 'bg-black text-white shadow-lg'
-        : 'text-black/80 hover:ring-2 hover:ring-black hover:bg-transparent'
-    }`}
-  onClick={() => {
-    setCurrentPage(item.id);
-    setIsOpen(false);
-  }}
->
-  <span className="mr-3 text-lg w-5 text-center">{item.icon}</span>
-  <span className="flex-1">{item.label}</span>
-</button>
+    ${currentPage === item.id
+                      ? 'bg-black text-white shadow-lg'
+                      : 'text-black/80 hover:ring-2 hover:ring-black hover:bg-transparent'
+                    }`}
+                  onClick={() => {
+                    setCurrentPage(item.id);
+                    setIsOpen(false);
+                  }}
+                >
+                  <span className="mr-3 text-lg w-5 text-center">{item.icon}</span>
+                  <span className="flex-1">{item.label}</span>
+                </button>
 
 
               </li>

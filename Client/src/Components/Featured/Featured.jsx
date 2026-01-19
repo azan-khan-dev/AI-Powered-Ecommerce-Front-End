@@ -186,10 +186,10 @@ const Featured = () => {
                                         className="absolute inset-0 w-full h-full object-contain scale-90 object-left" />
                                     <div className="absolute inset-0 bg-opacity-50" />
                                     <div className="relative z-10 p-7 w-full">
-                                        <h4 className="text-2xl font-medium text-white">Perfume</h4>
-                                        <p className="text-sm text-white mt-1">Gucci intense oud EDP</p>
+                                        <h4 className="text-2xl font-medium text-white">Glasses</h4>
+                                        <p className="text-sm text-white mt-1">Best Glasses for your eyes</p>
                                         <button
-                                            onClick={() => navigate("/products/Perfume")}
+                                            onClick={() => navigate("/products/Glasses")}
                                             className="mt-1 relative text-white px-1 py-2 group cursor-pointer"
                                         >
                                             Shop Now

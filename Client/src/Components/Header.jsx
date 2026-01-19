@@ -13,9 +13,12 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useLogoutMutation } from "../redux/apis/authApis";
 import { userNotExist } from "../redux/slices/authSlice";
+import { clearCart } from "../Features/cart/cartSlice";
+import { clearWishlist } from "../Features/Wishlist/WishlistSlice";
+import { clearOrders } from "../Features/Orders/OrdersSlice";
 
-function Header()
-{
+
+function Header() {
   const location = useLocation();
   const isUserNavigated = location.key !== "default";
   const navigate = useNavigate();
@@ -25,7 +28,7 @@ function Header()
   const wishlistCount = useSelector((state) => state.wishlist.count || 0);
   const orderCount = useSelector(selectOrderCount);
   const cancelledCount = useSelector(selectCancelledCount);
-
+  const siteSettings = useSelector((state) => state.settings.siteSettings);
   const [query, setQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showMobileSearch, setShowMobileSearch] = useState(false);
@@ -54,8 +57,7 @@ function Header()
   );
 
   // Search input handler
-  const handleSearch = (e) =>
-  {
+  const handleSearch = (e) => {
     const value = e.target.value;
     setQuery(value);
 
@@ -77,10 +79,12 @@ function Header()
     }
   };
 
-  const handleLogout = () =>
-  {
+  const handleLogout = () => {
     logoutApi().then(() => {
       dispatch(userNotExist());
+      dispatch(clearCart());
+      dispatch(clearWishlist());
+      dispatch(clearOrders());
     });
     navigate("/");
   };
@@ -105,13 +109,13 @@ function Header()
   return (
     <header className="sticky top-0 z-50 shadow-sm border-b bg-white">
       {/* Top Banner */}
-    
+
 
       {/* Main Header */}
       <div className="max-w-7xl mx-auto py-6 px-4 flex items-center justify-between bg-white">
         {/* Left: Logo */}
         <Link to="/" className="text-xl font-bold">
-SMART VISION        </Link>
+          {siteSettings?.siteName}        </Link>
 
         {/* Center Nav */}
         <nav className="hidden md:flex gap-10 text-sm font-quicksand font-semibold">
@@ -154,8 +158,7 @@ SMART VISION        </Link>
                         key={item._id}
                         to={`/product/${item._id}`}
                         className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-                        onClick={() =>
-                        {
+                        onClick={() => {
                           setQuery("");
                           setSearchQuery("");
                           setShowMobileSearch(false);
@@ -179,19 +182,19 @@ SMART VISION        </Link>
           )}
 
           {/* Search Desktop */}
-         <div className="hidden md:flex relative bg-gray-100 rounded-md px-4 py-2 w-[300px]
+          <div className="hidden md:flex relative bg-gray-100 rounded-md px-4 py-2 w-[300px]
   transition-all duration-300
   hover:ring-2 hover:ring-red-500
   focus-within:ring-2 focus-within:ring-red-600">
-  
-  <input
-    type="text"
-    value={query}
-    onChange={handleSearch}
-    onKeyDown={handleSearchKeyDown}
-    placeholder="Search products..."
-    className="flex-1 bg-transparent outline-none text-sm placeholder-gray-500"
-  />
+
+            <input
+              type="text"
+              value={query}
+              onChange={handleSearch}
+              onKeyDown={handleSearchKeyDown}
+              placeholder="Search products..."
+              className="flex-1 bg-transparent outline-none text-sm placeholder-gray-500"
+            />
             <CiSearch className="text-black text-2xl cursor-pointer ml-2" />
 
             {/* Suggestions */}
@@ -202,8 +205,7 @@ SMART VISION        </Link>
                     key={item._id}
                     to={`/product/${item._id}`}
                     className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-                    onClick={() =>
-                    {
+                    onClick={() => {
                       setQuery("");
                       setSearchQuery("");
                     }}
@@ -223,99 +225,99 @@ SMART VISION        </Link>
             )}
           </div>
 
-         {user && ( 
-           <>
-           {/* Wishlist & Cart */}
-           <Link to="/wishlist" className="relative hover:text-red-500 transition text-3xl">
-           <CiHeart />
-           {wishlistCount > 0 && (
-             <span className="absolute -top-2 -right-2 bg-red-600 text-xs text-white rounded-full w-4 h-4 flex items-center justify-center">
-               {wishlistCount}
-             </span>
-           )}
-         </Link>
+          {user && (
+            <>
+              {/* Wishlist & Cart */}
+              <Link to="/wishlist" className="relative hover:text-red-500 transition text-3xl">
+                <CiHeart />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-600 text-xs text-white rounded-full w-4 h-4 flex items-center justify-center">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
 
-         <Link to="/cart" className="relative hover:text-red-500 transition text-3xl">
-           <IoCartOutline />
-           {cartItems.length > 0 && (
-             <span className="absolute -top-2 -right-2 bg-red-600 text-xs text-white rounded-full w-4 h-4 flex items-center justify-center">
-               {cartItems.length}
-             </span>
-           )}
-         </Link>
+              <Link to="/cart" className="relative hover:text-red-500 transition text-3xl">
+                <IoCartOutline />
+                {cartItems.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-600 text-xs text-white rounded-full w-4 h-4 flex items-center justify-center">
+                    {cartItems.length}
+                  </span>
+                )}
+              </Link>
 
-         {/* Profile Dropdown */}
-       <div className="relative group hidden md:block">
-  <button className="hover:text-red-500 transition text-3xl focus:outline-none">
-    <CiUser />
-  </button>
+              {/* Profile Dropdown */}
+              <div className="relative group hidden md:block">
+                <button className="hover:text-red-500 transition text-3xl focus:outline-none">
+                  <CiUser />
+                </button>
 
-  <div className="opacity-0 invisible group-hover:visible group-hover:opacity-100 
+                <div className="opacity-0 invisible group-hover:visible group-hover:opacity-100 
     absolute right-0 mt-2 w-48 bg-black/55 backdrop-blur-md rounded-md transition-all duration-300 z-50">
 
-    {/* Admin only */}
-    {user?.role === "admin" ? (
-      <Link
-        to="/admin"
-        className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition"
-      >
-        <FaRegUser className="text-lg" /> Admin Dashboard
-      </Link>
-    ) : (
-      <>
-        {/* Normal users only */}
-        <Link
-          to="/profile"
-          className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition"
-        >
-          <CiUser className="text-lg" /> My profile
-        </Link>
+                  {/* Admin only */}
+                  {user?.role === "admin" ? (
+                    <Link
+                      to="/admin"
+                      className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition"
+                    >
+                      <FaRegUser className="text-lg" /> Admin Dashboard
+                    </Link>
+                  ) : (
+                    <>
+                      {/* Normal users only */}
+                      <Link
+                        to="/profile"
+                        className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition"
+                      >
+                        <CiUser className="text-lg" /> My profile
+                      </Link>
 
-        <Link
-          to="/orders"
-          className="flex items-center justify-between gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition"
-        >
-          <div className="flex items-center gap-2">
-            <FiShoppingBag className="text-lg" />
-            <span>My orders</span>
-          </div>
-          {orderCount > 0 && (
-            <span className="bg-red-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
-              {orderCount}
-            </span>
+                      <Link
+                        to="/orders"
+                        className="flex items-center justify-between gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition"
+                      >
+                        <div className="flex items-center gap-2">
+                          <FiShoppingBag className="text-lg" />
+                          <span>My orders</span>
+                        </div>
+                        {orderCount > 0 && (
+                          <span className="bg-red-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                            {orderCount}
+                          </span>
+                        )}
+                      </Link>
+
+                      <Link
+                        to="/cancellations"
+                        className="flex items-center justify-between gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition"
+                      >
+                        <div className="flex items-center gap-2">
+                          <MdOutlineCancel className="text-lg" />
+                          <span>My cancellations</span>
+                        </div>
+                        {cancelledCount > 0 && (
+                          <span className="bg-red-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                            {cancelledCount}
+                          </span>
+                        )}
+                      </Link>
+                    </>
+                  )}
+
+                  {/* Logout for all */}
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition"
+                  >
+                    <SlLogout className="text-lg" /> Logout
+                  </button>
+                </div>
+              </div>
+
+
+            </>
           )}
-        </Link>
-
-        <Link
-          to="/cancellations"
-          className="flex items-center justify-between gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition"
-        >
-          <div className="flex items-center gap-2">
-            <MdOutlineCancel className="text-lg" />
-            <span>My cancellations</span>
-          </div>
-          {cancelledCount > 0 && (
-            <span className="bg-red-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
-              {cancelledCount}
-            </span>
-          )}
-        </Link>
-      </>
-    )}
-
-    {/* Logout for all */}
-    <button
-      onClick={handleLogout}
-      className="flex items-center gap-2 px-4 py-2 text-white text-sm hover:bg-red-500 hover:rounded-md transition"
-    >
-      <SlLogout className="text-lg" /> Logout
-    </button>
-  </div>
-</div>
-
-
-         </>
-         )}
         </div>
       </div>
     </header>
