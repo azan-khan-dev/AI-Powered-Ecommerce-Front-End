@@ -142,7 +142,7 @@ const Featured = () => {
                                 </div>
                             ) : (
                                 <div className="relative bg-black overflow-hidden min-h-[150px] flex items-end group">
-                                    <img src="Public/e5659d572977438364a41d7e8c9d1e9a794d43ed.png" alt="Speakers"
+                                    <img src="https://img.freepik.com/premium-photo/glasses-isolated-black-background_496782-1142.jpg" alt="Speakers"
                                         className="absolute inset-0 w-full h-full object-contain scale-90 object-left" />
                                     <div className="absolute inset-0 bg-opacity-50" />
                                     <div className="relative z-10 p-7 w-full">
@@ -182,7 +182,7 @@ const Featured = () => {
                                 </div>
                             ) : (
                                 <div className="relative bg-black overflow-hidden min-h-[150px] flex items-end group">
-                                    <img src="Public/15315cd15102562cf220504d288fa568eaa816dd.png" alt="Perfume"
+                                    <img src="https://st3.depositphotos.com/12982378/35701/i/450/depositphotos_357010326-stock-photo-close-glasses-black-copy-space.jpg" alt="Perfume"
                                         className="absolute inset-0 w-full h-full object-contain scale-90 object-left" />
                                     <div className="absolute inset-0 bg-opacity-50" />
                                     <div className="relative z-10 p-7 w-full">

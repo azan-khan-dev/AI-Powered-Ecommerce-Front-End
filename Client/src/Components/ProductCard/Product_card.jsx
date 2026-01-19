@@ -5,11 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { addToCart } from "../../Features/cart/cartSlice";
-import {
-  addToWishlist,
-  removeFromWishlist,
-} from "../../Features/Wishlist/WishlistSlice";
-
+import { addToWishlist, removeFromWishlist } from "../../Features/Wishlist/WishlistSlice";
 import {
   useAddToWishlistMutation,
   useRemoveFromWishlistMutation,
@@ -19,45 +15,27 @@ import {
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  // 🔐 Auth user
   const user = useSelector((state) => state.auth?.user);
 
-  // Wishlist APIs
-  const [addToWishlistApi, { isLoading: isAdding }] =
-    useAddToWishlistMutation();
-  const [removeFromWishlistApi, { isLoading: isRemoving }] =
-    useRemoveFromWishlistMutation();
-
-  const { data: wishlistData, refetch } = useGetUserWishlistQuery(
-    undefined,
-    { skip: !user } // 🚫 login nahi to API hit nahi
-  );
+  const [addToWishlistApi, { isLoading: isAdding }] = useAddToWishlistMutation();
+  const [removeFromWishlistApi, { isLoading: isRemoving }] = useRemoveFromWishlistMutation();
+  const { data: wishlistData, refetch } = useGetUserWishlistQuery(undefined, { skip: !user });
 
   const wishlist = wishlistData?.data || [];
-
   const isInWishlist = wishlist.some(
-    (item) =>
-      item?.product?._id === product?.id ||
-      item?.product?.id === product?.id
+    (item) => item?.product?._id === product?.id || item?.product?.id === product?.id
   );
 
-  // 🔐 Auth guard
   const checkAuth = () => {
     if (!user) {
-      toast.error("Please login first", {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      toast.error("Please login first", { position: "top-right", autoClose: 2000 });
       return false;
     }
     return true;
   };
 
-  // ❤️ Wishlist handler
   const toggleWishlist = (e) => {
     e.stopPropagation();
-
     if (!checkAuth()) return;
 
     if (isInWishlist) {
@@ -72,18 +50,16 @@ const ProductCard = ({ product }) => {
             images: [{ url: product.image }],
             price: product.price,
             is_flash_sale: product.isFlashSale,
+            category: product.category, // ← Add category here
           },
         })
       );
-
       addToWishlistApi(product.id).then(refetch);
     }
   };
 
-  // 🛒 Cart handler
   const handleAddToCart = (e) => {
     e.stopPropagation();
-
     if (!checkAuth()) return;
 
     dispatch(
@@ -92,13 +68,11 @@ const ProductCard = ({ product }) => {
         name: product.title,
         price: product.price,
         image: product.image,
+        category: product.category, // ← Optional: include category in cart
       })
     );
 
-    toast.success("Added to cart", {
-      position: "top-right",
-      autoClose: 1500,
-    });
+    toast.success("Added to cart", { position: "top-right", autoClose: 1500 });
   };
 
   return (
@@ -113,11 +87,8 @@ const ProductCard = ({ product }) => {
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
 
-        {/* ❤️ Wishlist */}
-        <div
-          className="absolute top-2 right-2"
-          onClick={toggleWishlist}
-        >
+        {/* Wishlist */}
+        <div className="absolute top-2 right-2" onClick={toggleWishlist}>
           <div className="w-10 h-10 bg-gray-200 hover:bg-black rounded-full flex items-center justify-center transition">
             {isAdding || isRemoving ? (
               <svg
@@ -146,7 +117,7 @@ const ProductCard = ({ product }) => {
           </div>
         </div>
 
-        {/* 🛒 Add to Cart */}
+        {/* Add to Cart */}
         <div className="absolute bottom-[-100%] left-0 w-full transition-all duration-300 group-hover:bottom-0">
           <button
             onClick={handleAddToCart}
@@ -158,35 +129,32 @@ const ProductCard = ({ product }) => {
       </div>
 
       {/* Product Info */}
-      <h3 className="mt-4 text-lg font-semibold text-gray-700 px-3 truncate">
-        {product.title}
-      </h3>
+      <div className="p-3">
+        <h3 className="mt-2 text-lg font-semibold text-gray-700 truncate">{product.title}</h3>
 
-      <div className="mt-1 flex items-center gap-3 px-3">
-        <span className="text-red-600 font-bold text-base">
-          ${product.price}
-        </span>
-        <span className="line-through text-gray-400 text-sm">
-          ${product.originalPrice}
-        </span>
-      </div>
+        {/* Category Display */}
+        {product.category && (
+          <p className="text-sm text-blue-600 font-medium uppercase mt-1">
+            {product.category}
+          </p>
+        )}
 
-      <div className="mt-1 flex items-center gap-2 px-3 pb-4">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <span
-            key={i}
-            className={
-              i < Math.round(product.rating)
-                ? "text-yellow-500"
-                : "text-gray-300"
-            }
-          >
-            ★
-          </span>
-        ))}
-        <span className="text-sm text-gray-600">
-          ({product.rating})
-        </span>
+        {/* Description */}
+        {product.description && (
+          <p className="text-gray-600 text-sm line-clamp-2 mt-1">
+            {product.description}
+          </p>
+        )}
+
+        {/* Price */}
+        <div className="mt-2 flex items-center gap-2">
+          <span className="text-red-600 font-bold text-base">${product.price}</span>
+          {product.originalPrice && (
+            <span className="line-through text-gray-400 text-sm">
+              ${product.originalPrice}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -19,6 +19,7 @@ const CategoryProducts = () => {
     id: product._id,
     image: product.images?.[0]?.url,
     title: product.name,
+    description: product.description,
     price: product.is_flash_sale ? product.flash_sale_price : product.price,
     originalPrice: product.is_flash_sale ? product.price : undefined,
     rating: product.rating || 4.5,

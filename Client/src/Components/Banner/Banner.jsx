@@ -39,7 +39,7 @@ const BannerWithTimer = () => {
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between bg-black overflow-hidden shadow-lg px-4 sm:px-10 md:px-12 py-8 sm:py-10 md:py-1 mt-10 max-h-[600px]">
+    <div className="flex flex-col md:flex-row items-center justify-between bg-black overflow-hidden shadow-lg px-4 sm:px-10 md:px-12 py-8 sm:py-10 md:py-13 mt-10 max-h-[800px]">
       
       {/* LEFT SECTION */}
       <div className="flex flex-col items-start text-left gap-4 max-w-xl pl-10">
@@ -80,9 +80,9 @@ const BannerWithTimer = () => {
                         w-[250px] h-[250px] sm:w-[300px] sm:h-[300px] 
                         bg-gray-400 rounded-full blur-3xl opacity-50 z-0" />
         <img
-          src="/Public/Banner_pic.png"
+          src="https://assets.sunglasshut.com/is/image/LuxotticaRetail/889652341026__001.png?impolicy=SGH_bgtransparent&width=640"
           alt="Music"
-          className="rounded-lg h-[380px] sm:h-[500px] w-auto object-cover relative z-10"
+          className="rounded-lg h-[380px] sm:h-[200px] w-auto object-cover relative z-10"
         />
       </div>
     </div>

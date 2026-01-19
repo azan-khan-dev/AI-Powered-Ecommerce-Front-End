@@ -139,6 +139,20 @@ const Wishlist = () => {
               <h3 className="mt-4 text-lg font-semibold text-gray-700 px-3 truncate">
                 {item.product?.name}
               </h3>
+              {/* Category */}
+{item.product?.category && (
+  <p className="text-sm text-blue-600 font-medium uppercase px-3 mt-1">
+    {item.product.category}
+  </p>
+)}
+
+{/* Description */}
+{item.product?.description && (
+  <p className="text-gray-600 text-sm line-clamp-2 px-3 mt-1">
+    {item.product.description}
+  </p>
+)}
+
 
               {/* Price Section */}
               <div className="mt-1 flex items-center gap-3 px-3">

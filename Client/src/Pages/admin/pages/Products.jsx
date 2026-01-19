@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
-import { useGetAllProductsQuery, useCreateProductMutation, useUpdateProductMutation, useDeleteProductMutation } from '../../../redux/apis/productApis';
-import { useGetAllCategoriesQuery } from '../../../redux/apis/categoryApis';
+import React, { useState, useEffect } from 'react';
+import {
+  useGetAllProductsQuery,
+  useCreateProductMutation,
+  useUpdateProductMutation,
+  useDeleteProductMutation
+} from '../../../redux/apis/productApis';
 import ProductCard from '../components/ProductCard';
 import ProductForm from '../components/ProductForm';
 import { toast } from 'react-toastify';
@@ -9,21 +13,47 @@ const Products = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterCategory, setFilterCategory] = useState('all');
+  const [filterCategory, setFilterCategory] = useState('All Categories');
 
-  // API hooks
-  const { data: productsData, isLoading, refetch } = useGetAllProductsQuery({
-    search: searchTerm,
-    category: filterCategory === 'all' ? undefined : filterCategory,
-  });
-  const { data: categoriesData } = useGetAllCategoriesQuery();
+  const [page, setPage] = useState(1);
+  const ITEMS_PER_PAGE = 8;
+
+  const { data: productsData, isLoading, refetch } = useGetAllProductsQuery();
   const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
-  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
+  const [deleteProduct] = useDeleteProductMutation();
   const [deletingProductId, setDeletingProductId] = useState(null);
 
-  const products = productsData?.data || [];
-  const categories = categoriesData?.data || [];
+  const allProducts = productsData?.data || [];
+
+  // Static categories
+  const categoryOptions = [
+    'All Categories',
+    'Sun Glasses',
+    'Prescription',
+    'Reading',
+    'Contact Lenses',
+    'Kids Glasses',
+    'Sports'
+  ];
+
+  // Filtered products
+  const filteredProducts = allProducts.filter(product => {
+    const matchesCategory =
+      filterCategory === 'All Categories' || product.category === filterCategory;
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  // Pagination
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  const startIndex = (page - 1) * ITEMS_PER_PAGE;
+  const products = filteredProducts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, filterCategory]);
 
   const handleAddProduct = () => {
     setEditingProduct(null);
@@ -53,10 +83,10 @@ const Products = () => {
   const handleSaveProduct = async (formData) => {
     try {
       if (editingProduct) {
-        await updateProduct({ id: editingProduct._id, formData });
+        await updateProduct({ id: editingProduct._id, formData }).unwrap();
         toast.success('Product updated successfully');
       } else {
-        await createProduct(formData);
+        await createProduct(formData).unwrap();
         toast.success('Product created successfully');
       }
       setShowForm(false);
@@ -66,8 +96,6 @@ const Products = () => {
       toast.error(error?.data?.message || 'Failed to save product');
     }
   };
-
-  const categoryOptions = ['all', ...categories.map(cat => cat.title)];
 
   if (isLoading) {
     return (
@@ -88,7 +116,9 @@ const Products = () => {
     <div className="max-w-7xl mx-auto px-4 py-6">
       {/* Header + Add Button */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">Products Management</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
+          Products Management
+        </h1>
         <button
           className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg text-lg font-semibold transition-colors duration-200 flex items-center gap-2 w-full sm:w-auto justify-center"
           onClick={handleAddProduct}
@@ -100,42 +130,39 @@ const Products = () => {
       {/* Search and Categories */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6 items-start sm:items-center flex-wrap">
         <div className="flex-1 max-w-md w-full">
-        <input
-  type="text"
-  placeholder="Search products..."
-  value={searchTerm}
-  onChange={(e) => setSearchTerm(e.target.value)}
-  className="
-    w-full rounded-lg px-4 py-2
-    border border-gray-300
-    outline-none
-    transition-all duration-200
-    hover:border-red-500
-    focus:border-red-600
-    focus:ring-2 focus:ring-red-500
-  "
-/>
-
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="
+              w-full rounded-lg px-4 py-2
+              border border-gray-300
+              outline-none
+              transition-all duration-200
+              hover:border-red-500
+              focus:border-red-600
+              focus:ring-2 focus:ring-red-500
+            "
+          />
         </div>
 
         <div className="flex gap-2 flex-wrap w-full sm:w-auto">
           {categoryOptions.map(category => {
             const isActive = category === filterCategory;
-            return (
+            return ( 
               <button
-  key={category}
-  className={`px-4 py-2 rounded-lg text-sm font-medium
-    transition-all duration-200
-    ${
-      isActive
-        ? 'bg-red-600 text-white'
-        : 'bg-gray-200 text-black hover:ring-2 hover:ring-red-500 hover:bg-transparent'
-    }`}
-  onClick={() => setFilterCategory(category)}
->
-  {category === 'all' ? 'All Categories' : category}
-</button>
-
+                key={category}
+                className={`px-4 py-2 rounded-lg text-sm font-medium
+                  transition-all duration-200
+                  ${isActive
+                    ? 'bg-red-600 text-white'
+                    : 'bg-gray-200 text-black hover:ring-2 hover:ring-red-500 hover:bg-transparent'
+                  }`}
+                onClick={() => setFilterCategory(category)}
+              >
+                {category}
+              </button>
             );
           })}
         </div>
@@ -150,7 +177,7 @@ const Products = () => {
               ...product,
               id: product._id,
               title: product.name,
-              image: product.images[0]?.url,
+              image: product.images?.[0]?.url,
             }}
             onEdit={handleEditProduct}
             onDelete={handleDeleteProduct}
@@ -159,14 +186,43 @@ const Products = () => {
         ))}
       </div>
 
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-8 gap-2 flex-wrap">
+          {[...Array(totalPages)].map((_, index) => {
+            const pageNumber = index + 1;
+            const isActive = page === pageNumber;
+
+            return (
+              <button
+                key={pageNumber}
+                onClick={() => setPage(pageNumber)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium
+                  transition-all duration-200
+                  ${isActive
+                    ? 'bg-red-600 text-white'
+                    : 'bg-gray-200 text-black hover:ring-2 hover:ring-red-500 hover:bg-transparent'
+                  }`}
+              >
+                {pageNumber}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* Product Form Modal */}
       {showForm && (
         <ProductForm
-          product={editingProduct ? {
-            ...editingProduct,
-            title: editingProduct.name,
-            image: editingProduct.images?.[0]?.url,
-          } : null}
+          product={
+            editingProduct
+              ? {
+                  ...editingProduct,
+                  title: editingProduct.name,
+                  image: editingProduct.images?.[0]?.url,
+                }
+              : null
+          }
           onSave={handleSaveProduct}
           onCancel={() => {
             setShowForm(false);

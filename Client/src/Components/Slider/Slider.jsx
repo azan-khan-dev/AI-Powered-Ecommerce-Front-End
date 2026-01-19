@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 const slides = [
     {
         id: 1,
-        image: "/Public/apple-iphone-14-pro-max-z357i (1).jpg",
+        image: "https://images.unsplash.com/photo-1654257650833-b7398115275a?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE0fHx8ZW58MHx8fHx8",
         title: "Up to 10% off Vocher",
         subtitle: "On all Electronics",
         showButton: true,
@@ -14,28 +14,28 @@ const slides = [
     {
         id: 2,
         image:
-            "https://images.unsplash.com/photo-1717354585346-c35eb01e1673?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "https://images.unsplash.com/photo-1556306510-31ca015374b0?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         title: "Trendy Fashion",
         subtitle: "Discover New Styles",
     },
     {
         id: 3,
         image:
-            "https://images.unsplash.com/photo-1575671153502-a417e2ddd259?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "https://plus.unsplash.com/premium_photo-1709648420127-7479e53df7e8?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         title: "Functional Fashion",
         subtitle: "Carry it with style",
     },
     {
         id: 4,
         image:
-            "https://images.unsplash.com/photo-1556774687-0e2fdd0116c0?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "https://images.unsplash.com/photo-1631427984596-5b3412779d0c?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         title: "Free Delivery",
         subtitle: "For orders above Rs. 5000",
     },
     {
         id: 5,
         image:
-            "https://images.unsplash.com/photo-1549187774-b4e9b0445b41?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "https://images.pexels.com/photos/27544587/pexels-photo-27544587.jpeg",
         title: "Latest Gadgets",
         subtitle: "Now in stock",
     },

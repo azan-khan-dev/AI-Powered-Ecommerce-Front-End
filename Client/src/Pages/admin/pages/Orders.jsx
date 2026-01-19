@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
-import { useGetAllOrdersQuery, useUpdateOrderStatusMutation } from '../../../redux/apis/orderApis';
+import React, { useState, useEffect } from 'react';
+import {
+  useGetAllOrdersQuery,
+  useUpdateOrderStatusMutation
+} from '../../../redux/apis/orderApis';
 import OrderCard from '../components/OrderCard';
 import OrderDetails from '../components/OrderDetails';
 import { toast } from 'react-toastify';
@@ -10,21 +13,55 @@ const Orders = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [updatingOrderId, setUpdatingOrderId] = useState(null);
 
+  // 🔹 Pagination states
+  const [page, setPage] = useState(1);
+  const ITEMS_PER_PAGE = 6; // grid ke hisaab se
+
   // API hooks
-  const { data: ordersData, isLoading, refetch } = useGetAllOrdersQuery({
-    status: filterStatus === 'all' ? undefined : filterStatus,
+  const { data: ordersData, isLoading, refetch } =
+    useGetAllOrdersQuery({
+      status: filterStatus === 'all' ? undefined : filterStatus,
+    });
+
+  const [updateOrderStatus] = useUpdateOrderStatusMutation();
+
+  const allOrders = ordersData?.data || [];
+
+  // 🔹 Search filter (frontend)
+  const filteredOrders = allOrders.filter(order => {
+    if (!searchTerm) return true;
+
+    const term = searchTerm.toLowerCase();
+    return (
+      order._id?.toLowerCase().includes(term) ||
+      order.customer?.name?.toLowerCase().includes(term)
+    );
   });
-  const [updateOrderStatus, { isLoading: isUpdatingStatus }] = useUpdateOrderStatusMutation();
 
-  const orders = ordersData?.data || [];
+  // 🔹 Pagination logic
+  const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
+  const startIndex = (page - 1) * ITEMS_PER_PAGE;
+  const orders = filteredOrders.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
 
-  const handleStatusChange = async (orderId, newStatus, trackingNumber = '') => {
+  // 🔹 Reset page on filter/search change
+  useEffect(() => {
+    setPage(1);
+  }, [filterStatus, searchTerm]);
+
+  const handleStatusChange = async (
+    orderId,
+    newStatus,
+    trackingNumber = ''
+  ) => {
     setUpdatingOrderId(orderId);
     try {
       await updateOrderStatus({
         id: orderId,
         status: newStatus,
-        trackingNumber
+        trackingNumber,
       }).unwrap();
       toast.success('Order status updated successfully');
       refetch();
@@ -35,11 +72,16 @@ const Orders = () => {
     }
   };
 
-  const statusOptions = ['all', 'pending', 'processing', 'shipped', 'delivered'];
+  const statusOptions = [
+    'all',
+    'pending',
+    'processing',
+    'shipped',
+    'delivered',
+  ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
@@ -49,7 +91,6 @@ const Orders = () => {
 
       {/* Search + Status Buttons */}
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-0 mb-6 items-center">
-
         {/* Search */}
         <div className="w-full lg:w-auto lg:mr-3">
           <input
@@ -76,45 +117,43 @@ const Orders = () => {
             const isActive = status === filterStatus;
 
             return (
-            <button
-  key={status}
-  onClick={() => setFilterStatus(status)}
-  className={`
-    px-6 py-2 rounded-lg text-sm font-medium
-    transition-all duration-200
-    whitespace-nowrap
-    ${
-      isActive
-        ? 'bg-red-600 text-white'
-        : 'bg-gray-200 text-black hover:ring-2 hover:ring-red-500 hover:bg-transparent'
-    }
-  `}
->
-  {status === 'all'
-    ? 'All Status'
-    : status.charAt(0).toUpperCase() + status.slice(1)
-  }
-</button>
-
+              <button
+                key={status}
+                onClick={() => setFilterStatus(status)}
+                className={`
+                  px-6 py-2 rounded-lg text-sm font-medium
+                  transition-all duration-200
+                  whitespace-nowrap
+                  ${
+                    isActive
+                      ? 'bg-red-600 text-white'
+                      : 'bg-gray-200 text-black hover:ring-2 hover:ring-red-500 hover:bg-transparent'
+                  }
+                `}
+              >
+                {status === 'all'
+                  ? 'All Status'
+                  : status.charAt(0).toUpperCase() + status.slice(1)}
+              </button>
             );
           })}
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats (UNCHANGED) */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Stat title="Total Orders" value={orders.length} />
+        <Stat title="Total Orders" value={allOrders.length} />
         <Stat
           title="Pending Orders"
-          value={orders.filter(o => o.status === 'pending').length}
+          value={allOrders.filter(o => o.status === 'pending').length}
         />
         <Stat
           title="Processing"
-          value={orders.filter(o => o.status === 'processing').length}
+          value={allOrders.filter(o => o.status === 'processing').length}
         />
         <Stat
           title="Shipped"
-          value={orders.filter(o => o.status === 'shipped').length}
+          value={allOrders.filter(o => o.status === 'shipped').length}
         />
       </div>
 
@@ -136,7 +175,7 @@ const Orders = () => {
                 order={{
                   ...order,
                   id: order._id,
-                  customerId: order.customer._id,
+                  customerId: order.customer?._id,
                 }}
                 customerName={order.customer?.name || 'Unknown Customer'}
                 onStatusChange={handleStatusChange}
@@ -145,6 +184,32 @@ const Orders = () => {
               />
             ))}
           </div>
+
+          {/* Pagination (SAME DESIGN STYLE) */}
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-8 gap-2 flex-wrap">
+              {[...Array(totalPages)].map((_, index) => {
+                const pageNumber = index + 1;
+                const isActive = page === pageNumber;
+
+                return (
+                  <button
+                    key={pageNumber}
+                    onClick={() => setPage(pageNumber)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium
+                      transition-all duration-200
+                      ${
+                        isActive
+                          ? 'bg-red-600 text-white'
+                          : 'bg-gray-200 text-black hover:ring-2 hover:ring-red-500 hover:bg-transparent'
+                      }`}
+                  >
+                    {pageNumber}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           {/* Order Details Modal */}
           {selectedOrder && (
