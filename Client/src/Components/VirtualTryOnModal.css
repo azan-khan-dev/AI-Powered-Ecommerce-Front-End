@@ -83,20 +83,21 @@
     box-shadow: 0 5px 20px rgba(239, 68, 68, 0.5);
 }
 
-/* Glasses Selector Container */
+/* Glasses Selector Container - LEFT SIDE */
 .tryon-modal-selector-container {
     position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 20px 30px;
+    padding: 20px 15px;
     border-radius: 20px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     z-index: 10000;
-    max-width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .tryon-modal-selector-label {
@@ -105,14 +106,14 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
     text-align: center;
 }
 
 .tryon-modal-selector-grid {
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 12px;
     justify-content: center;
 }
 
@@ -130,6 +131,9 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    white-space: nowrap;
+    min-width: 140px;
+    text-align: center;
 }
 
 .tryon-modal-glasses-button::before {
@@ -146,7 +150,7 @@
 }
 
 .tryon-modal-glasses-button:hover {
-    transform: translateY(-2px);
+    transform: translateX(5px);
     border-color: rgba(239, 68, 68, 0.5);
     box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
 }
@@ -155,7 +159,7 @@
     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     border-color: #ef4444;
     box-shadow: 0 5px 20px rgba(239, 68, 68, 0.5);
-    transform: translateY(-2px);
+    transform: translateX(5px);
 }
 
 .tryon-modal-glasses-button.active::before {
@@ -182,13 +186,14 @@
     }
 
     .tryon-modal-selector-container {
-        bottom: 15px;
-        padding: 15px 20px;
+        left: 10px;
+        padding: 12px 10px;
         border-radius: 15px;
+        max-height: 70vh;
     }
 
     .tryon-modal-selector-label {
-        font-size: 11px;
+        font-size: 10px;
         margin-bottom: 10px;
     }
 
@@ -199,19 +204,41 @@
     .tryon-modal-glasses-button {
         padding: 10px 16px;
         font-size: 12px;
+        min-width: 120px;
     }
 }
 
 /* Extra small screens */
 @media (max-width: 480px) {
-    .tryon-modal-selector-grid {
-        max-width: 100%;
+    .tryon-modal-selector-container {
+        left: 5px;
+        padding: 10px 8px;
     }
 
     .tryon-modal-glasses-button {
         padding: 8px 12px;
         font-size: 11px;
+        min-width: 100px;
     }
+}
+
+/* Scrollbar styling for selector */
+.tryon-modal-selector-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tryon-modal-selector-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.tryon-modal-selector-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.tryon-modal-selector-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 /* Prevent body scroll when modal is open */
