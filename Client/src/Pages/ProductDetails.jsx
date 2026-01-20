@@ -105,11 +105,10 @@ const ProductPage = () => {
               <button
                 key={i}
                 onClick={() => setSelectedImage(img.url)}
-                className={`w-24 h-24 lg:w-full bg-gray-100 rounded-lg overflow-hidden border-2 ${
-                  selectedImage === img.url
-                    ? "border-red-500"
-                    : "border-transparent"
-                }`}
+                className={`w-24 h-24 lg:w-full bg-gray-100 rounded-lg overflow-hidden border-2 ${selectedImage === img.url
+                  ? "border-red-500"
+                  : "border-transparent"
+                  }`}
               >
                 <img
                   src={img.url}
@@ -158,10 +157,18 @@ const ProductPage = () => {
             <span className="text-sm text-green-500">In Stock</span>
           </div>
 
-          {/* Price */}
-          <div className="text-2xl font-semibold mb-4">
+          {/* Price - cross  */}
+          <div className={`text-2xl font-semibold mb-4 ${product?.flash_sale_price ? "line-through" : ""}`}>
             ${product.price}.00
           </div>
+
+
+          {/* Discounted Price */}
+          {product?.flash_sale_price && (
+            <div className="text-xl font-semibold mb-4">
+              ${product?.flash_sale_price}.00
+            </div>
+          )}
 
           {/* Description */}
           <p className="text-sm text-gray-600 mb-6">
