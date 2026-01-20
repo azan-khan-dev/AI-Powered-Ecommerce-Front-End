@@ -1,13 +1,16 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { useLocation, Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useCreateOrderMutation } from "../redux/apis/orderApis";
+import { clearCart } from "../Features/cart/cartSlice";
 import { toast } from 'react-toastify'
 
 const CheckoutPage = () => {
   const cartItems = useSelector((state) => state.cart.cartItems || []); // ✅ cart se data aa rha hai
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [createOrder, { isLoading: isCreatingOrder }] = useCreateOrderMutation();
 
@@ -108,7 +111,9 @@ const CheckoutPage = () => {
         return;
       }
 
-      if (response?.success) {
+      // ✅ Redirect for other payment methods (e.g., COD)
+      if (paymentMethod !== "online") {
+        dispatch(clearCart());
         navigate("/orders");
         return;
       }
