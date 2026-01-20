@@ -74,22 +74,22 @@ const CheckoutPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (cartItems.length === 0) {
       toast.error("Your cart is empty.");
       return;
     }
-  
+
     if (!isValidEmail(formData.shippingAddress.emailAddress)) {
       toast.error("Please enter a valid email address.");
       return;
     }
-  
+
     if (!isValidPhone(formData.shippingAddress.phoneNumber)) {
       toast.error("Please enter a valid phone number.");
       return;
     }
-  
+
     try {
       const response = await createOrder({
         customer: user?._id || "",
@@ -98,16 +98,21 @@ const CheckoutPage = () => {
         total,
         paymentMethod,
       }).unwrap();
-  
+
       // ✅ Success toast
       toast.success(response?.message || "Order placed successfully!");
-  
+
       // ✅ Redirect for online payment
       if (response?.success && response?.sessionUrl && paymentMethod === "online") {
         window.location.href = response.sessionUrl;
         return;
       }
-  
+
+      if (response?.success && paymentMethod === "cash_on_delivery") {
+        navigate("/orders");
+        return;
+      }
+
       console.log("Order placed successfully:", response);
     } catch (error) {
       // ✅ Proper error handling for RTK Query
@@ -115,12 +120,12 @@ const CheckoutPage = () => {
         error?.data?.message ||
         error?.error ||
         "Failed to place order. Please try again.";
-  
+
       toast.error(errorMessage);
       console.error("Error placing order:", error);
     }
   };
-  
+
 
   return (
     <div className="min-h-screen">
