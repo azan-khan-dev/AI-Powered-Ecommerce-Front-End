@@ -100,7 +100,7 @@ function Login()
           {/* Heading */}
           <div>
             <h1 className="text-3xl sm:text-4xl font-semibold text-center md:text-left">
-              Login to Exclusive
+              Login to Smart Vision
             </h1>
             <p className="pt-3 text-center md:text-left text-gray-600">
               Enter your details below
