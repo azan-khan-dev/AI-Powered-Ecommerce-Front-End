@@ -108,7 +108,7 @@ const CheckoutPage = () => {
         return;
       }
 
-      if (response?.success && paymentMethod === "cash_on_delivery") {
+      if (response?.success) {
         navigate("/orders");
         return;
       }
