@@ -15,7 +15,6 @@ This project showcases a clean UI, dynamic product display, and smooth user inte
 - **React** – Front-end library for building interactive UI
 - **Tailwind CSS** – Utility-first CSS framework for styling
 - **Vite** – Development and build tool
-- **ShadCN** – UI components for faster development
 - **React Router** – For navigation and routing
 
 ## Getting Started
